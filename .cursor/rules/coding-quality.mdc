@@ -1,5 +1,5 @@
 ---
-description: Clean code quality — minimal comments, efficiency, consistency
+description: Clean code quality: minimal comments, efficiency, consistency
 alwaysApply: true
 ---
 
@@ -8,13 +8,13 @@ alwaysApply: true
 ## Comments
 
 - **No comments** in application code. Names, types, and structure must carry meaning.
-- **Exception:** Solidity / smart contracts — use **NatSpec** (`@title`, `@notice`, `@param`, `@return`, `@dev` only when non-obvious).
+- **Exception:** Solidity / smart contracts: use **NatSpec** (`@title`, `@notice`, `@param`, `@return`, `@dev` only when non-obvious).
 - Never narrate (`// increment i`, `// call MoMo`). Never leave TODOs that mask unfinished design.
 - Prefer deleting dead code over commenting it out.
 
 ## Efficiency
 
-- Do the smallest change that solves the task — no speculative abstractions.
+- Do the smallest change that solves the task: no speculative abstractions.
 - No unused imports, variables, exports, or dependencies.
 - Avoid N+1 queries, unbounded loops over network I/O, and sync work on hot paths.
 - Hot paths (invoice accept → disburse): minimize allocations; prefer streaming/subscribe over poll storms.
@@ -25,20 +25,21 @@ alwaysApply: true
 - Match existing naming, file layout, and patterns in the touched package.
 - One style per concern: errors, logging, validation, HTTP handlers.
 - Public APIs: stable names from `docs/OFFRAMP_FLOW.md` / `packages/shared`.
+- Copy and UI voice: see `voice-and-copy.mdc` and `frontend-ui.mdc` (no AI-sounding text, no em dashes, no invented themes).
 
 ## Structure
 
 - Functions do one thing; early return over deep nesting.
-- Pure domain logic free of HTTP/gRPC/MoMo clients — inject ports at edges.
+- Pure domain logic free of HTTP/gRPC/MoMo clients. Inject ports at edges.
 - No god files; split by feature when a module exceeds clear responsibility.
 
 ## Forbidden
 
 ```ts
-// ❌ BAD
+// BAD
 // Settle the invoice after MoMo succeeds
 await settle(preimage);
 
-// ✅ GOOD
+// GOOD
 await settle(preimage);
 ```

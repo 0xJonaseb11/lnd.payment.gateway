@@ -1,4 +1,4 @@
-# Offramp flow — Lightning BTC → RWF MoMo
+# Offramp flow: Lightning BTC → RWF MoMo
 
 Canonical happy path and failure paths for agents implementing NikoPay Lightning.
 
@@ -10,7 +10,7 @@ Canonical happy path and failure paths for agents implementing NikoPay Lightning
 - **MTN MoMo**: Credits recipient MSISDN in RWF
 - **Recipient**: Mobile Money user in Rwanda
 
-## Sequence (hold invoice — recommended)
+## Sequence (hold invoice: recommended)
 
 ```mermaid
 sequenceDiagram
@@ -30,7 +30,7 @@ sequenceDiagram
 
   W->>LN: pay invoice (HTLC)
   LN-->>API: invoice ACCEPTED (SubscribeInvoices)
-  Note over API: state = LN_ACCEPTED<br/>crypto finality signal (~ms–s)
+  Note over API: state = LN_ACCEPTED<br/>crypto finality signal (~ms-s)
 
   API->>MM: transfer(rwf, msisdn, X-Reference-Id)
   MM->>MoMo: POST disbursement/v1_0/transfer
@@ -94,15 +94,15 @@ Use exactly these in code and APIs (see `packages/shared`):
 ## Idempotency rules
 
 - `offramp_id` primary key
-- MoMo `X-Reference-Id` = UUIDv5(namespace, offramp_id) — same id on every retry
+- MoMo `X-Reference-Id` = UUIDv5(namespace, offramp_id): same id on every retry
 - Settle/cancel LN at most once; gate on DB state transitions (conditional updates)
 
 ## UX stages (product)
 
-1. **Waiting for Lightning** — show QR / BOLT11  
-2. **Bitcoin received** — LN accepted (crypto finality)  
-3. **Sending to Mobile Money** — disbursing  
-4. **RWF delivered** — COMPLETE + receipt  
+1. **Waiting for Lightning**: show QR / BOLT11  
+2. **Bitcoin received**: LN accepted (crypto finality)  
+3. **Sending to Mobile Money**: disbursing  
+4. **RWF delivered**: COMPLETE + receipt  
 
 Do not claim “instant RWF” if MoMo is still pending; claim **instant Bitcoin settlement** + **fast MoMo payout**.
 

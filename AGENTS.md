@@ -1,4 +1,4 @@
-# AGENTS.md — NikoPay Lightning
+# AGENTS.md: NikoPay Lightning
 
 > **Mission:** Make crypto spendable as **RWF on Mobile Money** with **~1 second Lightning finality** on the Bitcoin leg. This repo gathers Lightning knowledge and the blueprint/skills to build NikoPay’s **BTC (Lightning) → MTN/Airtel MoMo** offramp.
 
@@ -8,11 +8,11 @@
 
 | | |
 |--|--|
-| **Product** | [NikoPay](https://www.nikopay.rw/) — stablecoins/crypto → Rwandan Francs via Mobile Money |
+| **Product** | [NikoPay](https://www.nikopay.rw/): stablecoins/crypto → Rwandan Francs via Mobile Money |
 | **Today** | USDT (TRC20) → MTN MoMo (UI live; waitlist) |
 | **This repo** | Lightning Network rail: **sats in → RWF out** |
 | **Finality goal** | LN accept/settle in ~1s; MoMo payout starts immediately after (MoMo latency separate in UX) |
-| **Competitor** | [Tando](https://tando.me/) — Lightning → M-Pesa (Kenya) |
+| **Competitor** | [Tando](https://tando.me/): Lightning → M-Pesa (Kenya) |
 
 ---
 
@@ -37,10 +37,37 @@
 | [`docs/OFFRAMP_FLOW.md`](docs/OFFRAMP_FLOW.md) | Sequence diagrams, API shapes, failure paths |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phased delivery gates |
 | [`docs/RESOURCES.md`](docs/RESOURCES.md) | Curated external docs (paper, LND, MoMo, Taproot, BitGo) |
+| [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md) | Code quality bar + rule index |
 
 ---
 
-## Skills (focus — load these)
+## Coding rules (quality bar)
+
+Enforce via [`.cursor/rules/`](.cursor/rules/). Summary:
+
+- **No comments** in app/TS code. Clarity via names and types only.
+- **NatSpec allowed** on Solidity (`*.sol`) only.
+- Strict TypeScript, branded money/IDs, validate at boundaries.
+- Thin handlers; dumb gateways; orchestration in `offramp-api`.
+- Idempotent MoMo; conditional state transitions; efficient LN accept path.
+- Tests: deterministic, mocked ports; behavior over snapshots.
+- **Voice:** no em dashes, no AI filler, sentence case only.
+- **UI:** reuse NikoPay theme/tokens; never invent a new look or AI-default layouts.
+
+| Rule | Applies |
+|------|---------|
+| [`coding-quality`](.cursor/rules/coding-quality.mdc) | Always |
+| [`voice-and-copy`](.cursor/rules/voice-and-copy.mdc) | Always |
+| [`typescript-conventions`](.cursor/rules/typescript-conventions.mdc) | `*.ts` / `*.tsx` |
+| [`service-layering`](.cursor/rules/service-layering.mdc) | `services/**` |
+| [`api-conventions`](.cursor/rules/api-conventions.mdc) | `offramp-api/**` |
+| [`frontend-ui`](.cursor/rules/frontend-ui.mdc) | UI files |
+| [`testing-conventions`](.cursor/rules/testing-conventions.mdc) | `*.test.ts` / `*.spec.ts` |
+| [`solidity-natspec`](.cursor/rules/solidity-natspec.mdc) | `*.sol` |
+
+---
+
+## Skills (focus: load these)
 
 Project skills live in [`.cursor/skills/`](.cursor/skills/). Descriptions trigger discovery; read `SKILL.md` fully before coding in that domain.
 
@@ -77,24 +104,24 @@ Full table: [`docs/RESOURCES.md`](docs/RESOURCES.md). Highlights:
 
 ### Lightning theory
 
-- Intro concepts (channels, HTLCs, blockchain as arbiter) — see skill `lightning-fundamentals`
+- Intro concepts (channels, HTLCs, blockchain as arbiter): see skill `lightning-fundamentals`
 - [White paper](https://lightning.network/lightning-network-paper.pdf)
 - [Docs index](https://lightning.network/docs/) · [Summary](https://lightning.network/lightning-network-summary.pdf)
 - Slides: [technical](https://lightning.network/lightning-network-technical-summary.pdf) · [overview](https://lightning.network/lightning-network.pdf) · [SF Social](https://lightning.network/lightning-network-presentation-sfbitcoinsocial-2015-05-26.pdf) · [Time](https://lightning.network/lightning-network-presentation-time-2015-07-06.pdf)
 
 ### LND (build target)
 
-- [Overview](https://dev.lightning.community/overview/) — **required conceptual read**
-- [Installation](https://dev.lightning.community/guides/installation/) — **required setup**
+- [Overview](https://dev.lightning.community/overview/): **required conceptual read**
+- [Installation](https://dev.lightning.community/guides/installation/): **required setup**
 
 ### Optional / later
 
-- [BitGo Lightning](https://developers.bitgo.com/docs/bitcoin-lightning/) — custody adapter, not v1 default
-- [Taproot Assets](https://docs.lightning.engineering/the-lightning-network/taproot-assets) — multi-asset LN; supervisor priority for later phases
+- [BitGo Lightning](https://developers.bitgo.com/docs/bitcoin-lightning/): custody adapter, not v1 default
+- [Taproot Assets](https://docs.lightning.engineering/the-lightning-network/taproot-assets): multi-asset LN; supervisor priority for later phases
 
 ### Fiat rail
 
-- [MoMo Getting Started](https://momodeveloper.mtn.com/api-documentation/getting-started) — Disbursements for RWF payout
+- [MoMo Getting Started](https://momodeveloper.mtn.com/api-documentation/getting-started): Disbursements for RWF payout
 
 ---
 
@@ -105,9 +132,10 @@ Full table: [`docs/RESOURCES.md`](docs/RESOURCES.md). Highlights:
 3. **No secrets** in git (macaroons, MoMo keys, `.env`).
 4. Respect **`docs/ROADMAP.md`** phase order.
 5. Prefer updating skills/docs when architecture decisions change.
+6. Obey **coding rules**: clean, consistent, comment-free (NatSpec on contracts only), efficient hot paths.
 
 ---
 
 ## Lightning intro (condensed)
 
-Lightning scales Bitcoin with **off-chain bidirectional payment channels**. Parties update balances by exchanging signed transactions without broadcasting each payment. **HTLCs** enable multihop atomic payments across the channel graph. Security is enforced by Bitcoin scripts if counterparties cheat or go offline. Result: high volume, low fees, **millisecond-to-second** payments — the reason NikoPay chooses Lightning for fast offramp initiation.
+Lightning scales Bitcoin with **off-chain bidirectional payment channels**. Parties update balances by exchanging signed transactions without broadcasting each payment. **HTLCs** enable multihop atomic payments across the channel graph. Security is enforced by Bitcoin scripts if counterparties cheat or go offline. Result: high volume, low fees, **millisecond-to-second** payments: the reason NikoPay chooses Lightning for fast offramp initiation.

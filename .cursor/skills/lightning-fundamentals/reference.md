@@ -1,4 +1,4 @@
-# Lightning fundamentals — reference
+# Lightning fundamentals: reference
 
 ## From LND overview (dev.lightning.community)
 

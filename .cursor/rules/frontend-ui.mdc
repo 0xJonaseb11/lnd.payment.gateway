@@ -1,0 +1,36 @@
+---
+description: Frontend UI: follow NikoPay theme, no AI layout tropes
+globs: "**/*.{tsx,jsx,css,scss,vue,svelte}"
+alwaysApply: false
+---
+
+# Frontend UI
+
+## Theme (non-negotiable)
+
+- **Follow the existing app theme.** Reuse colors, type, spacing, radii, and components from the NikoPay design system / CSS variables already in the product.
+- **Do not invent a theme** (new palette, new font stack, new "AI SaaS" look) when integrating Lightning screens.
+- If tokens live in the main NikoPay app, import or mirror those tokens. If only marketing exists, match [nikopay.rw](https://www.nikopay.rw/) visually before inventing anything.
+- When unsure, ask or inspect existing UI source. Never "improve" branding in a drive-by.
+
+## Anti-AI UI structures
+
+Avoid default agent UI kits:
+
+- Purple / indigo gradients on white
+- Glow shadows, glassmorphism, neon accents
+- Pill chip rows, badge clusters, icon-stat strips in the hero
+- Generic Inter/Roboto/Arial stacks when the app already sets fonts
+- Card grids that add chrome without interaction need
+- Fake dashboards, empty "insights" widgets, decorative charts
+
+## Layout discipline
+
+- One job per section. One primary CTA.
+- Prefer product flows (quote → pay → status) over marketing ornament on app screens.
+- Status UI must separate **Bitcoin received** from **RWF delivered**.
+- Mobile-first; match existing breakpoints and nav patterns.
+
+## Copy in UI
+
+Obey `voice-and-copy` (no em dashes, sentence case, no AI filler). Labels stay short and literal.

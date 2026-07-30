@@ -1,0 +1,44 @@
+---
+description: Service layering: gateways, orchestration, idempotency, ports
+globs: "services/**/*.{ts,tsx,js}"
+alwaysApply: false
+---
+
+# Service layering
+
+## Boundaries
+
+| Package | May call |
+|---------|----------|
+| `offramp-api` | `fx-rate`, `ln-gateway`, `momo-gateway`, DB |
+| `ln-gateway` | LND only |
+| `momo-gateway` | MoMo HTTP only |
+| `fx-rate` | FX sources only |
+
+- Orchestration lives in `offramp-api` (or a dedicated worker), not inside gateways.
+- Gateways expose small ports: `addHoldInvoice`, `settle`, `cancel`, `transfer`, `getStatus`.
+
+## Handlers
+
+```ts
+// ✅ thin HTTP → validate → service → map response
+export async function postQuote(req, reply) {
+  const input = QuoteSchema.parse(req.body);
+  const result = await offrampService.createQuote(input);
+  return reply.code(201).send(toQuoteResponse(result));
+}
+```
+
+- No business rules in route files.
+- No raw gRPC/MoMo types leaking into HTTP JSON: map to public DTOs.
+
+## Idempotency & state
+
+- Every mutation keyed by `offramp_id` or deterministic MoMo `X-Reference-Id`.
+- State transitions: conditional update (`WHERE status = :from`). Fail loud on conflict.
+- Retries reuse the same idempotency key: never mint a second payout reference.
+
+## Efficiency on the accept path
+
+- On `LN_ACCEPTED`: enqueue disburse immediately; do not block the gRPC subscription handler on MoMo round-trips beyond a short handoff.
+- Prefer one subscription stream per process over per-request polling.

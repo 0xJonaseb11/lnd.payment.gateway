@@ -17,7 +17,7 @@ Today’s live narrative is **USDT (TRC20) → MTN MoMo**. This repository exist
 
 ## Why Lightning
 
-- Off-chain payments: milliseconds–seconds, no block waits
+- Off-chain payments: milliseconds-seconds, no block waits
 - Low fees for remittance-sized amounts
 - Enforceable via Bitcoin as arbiter (channels + HTLCs)
 - Matches competitor **Tando** (Kenya): user pays LN invoice → local mobile money credited

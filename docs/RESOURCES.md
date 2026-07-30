@@ -53,7 +53,7 @@ Query Lightning Labs docs with `?ask=` on `.md` URLs when detail is missing.
 |----------|-----|
 | [MoMo Getting Started](https://momodeveloper.mtn.com/api-documentation/getting-started) | Portal onboarding |
 | [momodeveloper.mtn.com](https://momodeveloper.mtn.com/) | Products: Collections, Disbursements, Remittance |
-| Disbursements | `POST /disbursement/v1_0/transfer` + status GET — **primary for offramp** |
+| Disbursements | `POST /disbursement/v1_0/transfer` + status GET: **primary for offramp** |
 
 Sandbox base: `https://sandbox.momodeveloper.mtn.com`  
 Production: country-specific target environment (Rwanda) after KYC approval.

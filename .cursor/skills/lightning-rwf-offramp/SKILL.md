@@ -26,13 +26,13 @@ Quote (RWF + MSISDN) → lock FX → hold BOLT11
 
 ## Implementation rules
 
-1. **Hold invoices by default** — do not settle LN before MoMo success.
-2. **Idempotent MoMo** — `X-Reference-Id` deterministic from `offramp_id`.
-3. **Conditional state transitions** — DB update `WHERE status = expected`.
-4. **Gate quotes** — refuse if MoMo float low or inbound LN liquidity low.
-5. **Honest UX** — “Bitcoin received” ≠ “RWF delivered”.
-6. **Integer money** — msat + RWF minor units; no floats.
-7. **Single-use invoices** — new invoice per quote; honor TTL.
+1. **Hold invoices by default**: do not settle LN before MoMo success.
+2. **Idempotent MoMo**: `X-Reference-Id` deterministic from `offramp_id`.
+3. **Conditional state transitions**: DB update `WHERE status = expected`.
+4. **Gate quotes**: refuse if MoMo float low or inbound LN liquidity low.
+5. **Honest UX**: “Bitcoin received” ≠ “RWF delivered”.
+6. **Integer money**: msat + RWF minor units; no floats.
+7. **Single-use invoices**: new invoice per quote; honor TTL.
 
 ## Service boundaries
 
@@ -54,15 +54,15 @@ Failure branches: `EXPIRED` · `MOMO_FAILED` → `LN_CANCELED` → `REFUNDED` ·
 
 ## API to implement
 
-- `GET /.well-known/nikopay-ln.json` — discovery
-- `POST /v1/offramp/quote` — issue hold invoice
-- `GET /v1/offramp/:id` — status
+- `GET /.well-known/nikopay-ln.json`: discovery
+- `POST /v1/offramp/quote`: issue hold invoice
+- `GET /v1/offramp/:id`: status
 - Worker: subscribe invoices; on ACCEPTED enqueue disburse
 - Worker: MoMo terminal status → settle/cancel
 
 ## Latency
 
-Optimize time from payment propagation → `LN_ACCEPTED` handling (<1–3s typical). MoMo is asynchronous; do not block HTTP on MoMo completion for the payer’s Lightning stack (settle happens in worker).
+Optimize time from payment propagation → `LN_ACCEPTED` handling (<1-3s typical). MoMo is asynchronous; do not block HTTP on MoMo completion for the payer’s Lightning stack (settle happens in worker).
 
 ## Tests required before “done”
 

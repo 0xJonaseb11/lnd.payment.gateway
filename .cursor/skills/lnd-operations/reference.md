@@ -1,4 +1,4 @@
-# LND operations — reference
+# LND operations: reference
 
 ## Install (from upstream guide; pin Go version to current LND docs when building)
 
@@ -34,7 +34,7 @@ Simnet/regtest: swap network flags; mine blocks locally for channel confs.
 ## Wallet
 
 ```
-lncli create    # first run — backup 24-word seed
+lncli create    # first run: backup 24-word seed
 lncli unlock    # subsequent starts
 ```
 
@@ -59,4 +59,4 @@ lncli decodepayreq <bolt11>
 
 ## Units reminder
 
-APIs mix sat and msat — normalize to **msat integers** in NikoPay code.
+APIs mix sat and msat: normalize to **msat integers** in NikoPay code.

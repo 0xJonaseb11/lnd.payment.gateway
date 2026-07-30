@@ -10,7 +10,7 @@ description: >-
 
 ## When to use this skill
 
-Only after **BTC Lightning → RWF** Phase 1–3 works (`docs/ROADMAP.md`). Supervisor flagged Taproot Assets as architecturally important for multi-asset LN — it is **not** the v1 critical path.
+Only after **BTC Lightning → RWF** Phase 1-3 works (`docs/ROADMAP.md`). Supervisor flagged Taproot Assets as architecturally important for multi-asset LN: it is **not** the v1 critical path.
 
 ## What it is
 
@@ -36,12 +36,12 @@ Atomic BTC↔asset forwards at edge nodes can let wallets pay in BTC while NikoP
 - Needs `tapd` + asset-aware channels + universe/proofs ops
 - Exchange rates at edge nodes are **integrator-defined** (not protocol-set)
 - Liquidity in **both** BTC and asset channels
-- Still need MoMo RWF float — assets don’t remove fiat rail
+- Still need MoMo RWF float: assets don’t remove fiat rail
 
 ## Agent rules
 
 1. Do not block BTC offramp work on Taproot Assets  
-2. If prototyping, isolate under `services/tap-gateway/` (future) — do not overload `ln-gateway` until interfaces are clear  
+2. If prototyping, isolate under `services/tap-gateway/` (future): do not overload `ln-gateway` until interfaces are clear  
 3. Prefer querying Lightning Labs docs with `?ask=` on `.md` URLs for up-to-date protocol details  
 
 ## Decision record (current)

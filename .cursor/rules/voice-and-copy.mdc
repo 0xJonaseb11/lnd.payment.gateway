@@ -1,0 +1,38 @@
+---
+description: Human voice: no AI-sounding copy, no em dashes, no Title Case spam
+alwaysApply: true
+---
+
+# Voice and copy
+
+## Hard bans
+
+- No em dashes (`—`) or en dashes used as clause breaks. Use commas, periods, colons, or parentheses.
+- No obvious AI filler: "delve", "seamless", "robust", "leverage", "cutting-edge", "elevate", "empower", "unlock", "in today's world", "it's important to note".
+- No stacked marketing cadence: short hype line, short hype line, short hype line.
+- No unnecessary Capitalization Of Every Word in headings, buttons, or labels.
+- No fake enthusiasm or empty superlatives in UI strings, README blurbs, or error messages.
+
+## Preferred voice
+
+- Plain, specific, product-true. Say what the screen does.
+- Sentence case for headings and buttons ("Send to Mobile Money", not "Send To Mobile Money").
+- Prefer "Bitcoin received" / "RWF delivered" over vague "Success!" / "All set!".
+- Match NikoPay tone on [nikopay.rw](https://www.nikopay.rw/): direct, Rwanda-first, fee-transparent. Do not invent a new brand voice.
+
+## Examples
+
+```
+Bad:  Making Stablecoins Spendable — Instantly & Seamlessly
+Good: Making stablecoins spendable
+
+Bad:  Unlock Your Lightning-Powered Offramp Experience
+Good: Pay with Lightning. Get RWF on MoMo.
+
+Bad:  Something went wrong — please try again later!
+Good: Payment could not be sent. Check the number and try again.
+```
+
+## Docs and commits in this repo
+
+Same rules. Keep AGENTS/docs factual. No decorative punctuation thrift-store (emoji showers, badge walls, "✨" fluff).

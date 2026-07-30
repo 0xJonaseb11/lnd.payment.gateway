@@ -78,7 +78,7 @@ LND/
 
 | Layer | Choice |
 |-------|--------|
-| Language | TypeScript (Node 20+) for API gateways — matches web product velocity |
+| Language | TypeScript (Node 20+) for API gateways: matches web product velocity |
 | HTTP | Fastify or Hono |
 | DB | Postgres + migrations |
 | Queue/jobs | Postgres-backed worker or Redis/BullMQ |

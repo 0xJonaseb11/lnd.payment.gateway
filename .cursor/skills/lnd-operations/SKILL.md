@@ -40,9 +40,9 @@ Task Progress:
 
 ## Interfaces
 
-- `lncli` — ops and debugging
-- **gRPC** — application integration (preferred)
-- REST proxy — only if gRPC blocked; streaming weaker
+- `lncli`: ops and debugging
+- **gRPC**: application integration (preferred)
+- REST proxy: only if gRPC blocked; streaming weaker
 
 ## Invoice ops (app-facing)
 
@@ -53,7 +53,7 @@ Task Progress:
 | Watch payment | `SubscribeInvoices` / `LookupInvoice` |
 | Liquidity gate | Channel balances / remote balance inbound |
 
-Exact RPC names can vary slightly by LND version — verify against current API docs when implementing.
+Exact RPC names can vary slightly by LND version: verify against current API docs when implementing.
 
 ## Macaroon least privilege
 
@@ -76,6 +76,6 @@ BitGo manages node/channels for custody LN wallets (`subType: lightningCustody`)
 
 ## Related
 
-- [reference.md](reference.md) — commands and conf snippets
+- [reference.md](reference.md): commands and conf snippets
 - Skill `lightning-rwf-offramp` for product wiring
 - `infra/docker/` for compose (when added)

@@ -1,0 +1,34 @@
+---
+description: API and DTO conventions for offramp HTTP surfaces
+globs: "services/offramp-api/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# API conventions
+
+## Shape
+
+- Versioned paths: `/v1/...`
+- External JSON: `snake_case` fields matching `docs/OFFRAMP_FLOW.md`.
+- Internal TS: `camelCase`. Map at the boundary once.
+
+## Responses
+
+- Success: explicit DTO; no raw DB rows.
+- Errors: `{ "error": { "code": "QUOTE_EXPIRED", "message": "..." } }`: stable `code`, safe `message`.
+- Never return macaroons, preimages (except settle internals), or full MSISDNs in logs/error payloads (mask).
+
+## HTTP semantics
+
+| Action | Status |
+|--------|--------|
+| Quote created | `201` |
+| Status fetch | `200` |
+| Validation fail | `400` |
+| Business reject (float/liquidity) | `409` or `503` as documented |
+| Unknown id | `404` |
+
+## Efficiency
+
+- Quote endpoint: cheap FX + invoice create; no MoMo transfer.
+- Status endpoint: read model only: no side effects.

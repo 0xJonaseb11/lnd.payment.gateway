@@ -1,8 +1,8 @@
-# Roadmap — Lightning → RWF for NikoPay
+# Roadmap: Lightning → RWF for NikoPay
 
 Agents should implement in phase order. Do not skip liquidity/idempotency foundations.
 
-## Phase 0 — Agent readiness (this repo)
+## Phase 0: Agent readiness (this repo)
 
 - [x] Restructured `AGENTS.md`
 - [x] Architecture + structure + flow docs
@@ -10,7 +10,7 @@ Agents should implement in phase order. Do not skip liquidity/idempotency founda
 - [ ] Local Docker: bitcoind/btcd + LND simnet/regtest
 - [ ] Smoke: create invoice, pay, settle
 
-## Phase 1 — LN receive path (no MoMo yet)
+## Phase 1: LN receive path (no MoMo yet)
 
 - [ ] `packages/shared` status machine + money types
 - [ ] `ln-gateway` gRPC client (macaroon + TLS)
@@ -20,7 +20,7 @@ Agents should implement in phase order. Do not skip liquidity/idempotency founda
 
 **Exit criteria:** Pay invoice from second LND; API observes `LN_ACCEPTED` then settle.
 
-## Phase 2 — MoMo sandbox disbursement
+## Phase 2: MoMo sandbox disbursement
 
 - [ ] `momo-gateway` token + transfer + status
 - [ ] Wire `LN_ACCEPTED` → disbursement with idempotent reference
@@ -30,7 +30,7 @@ Agents should implement in phase order. Do not skip liquidity/idempotency founda
 
 **Exit criteria:** End-to-end simnet LN + MoMo sandbox credit (or recorded sandbox success).
 
-## Phase 3 — Production hardening
+## Phase 3: Production hardening
 
 - [ ] Real FX source + fee policy + quote TTL
 - [ ] Float + inbound liquidity gates
@@ -41,14 +41,14 @@ Agents should implement in phase order. Do not skip liquidity/idempotency founda
 
 **Exit criteria:** Testnet (or limited mainnet) pilot with ops dashboard.
 
-## Phase 4 — Product integration
+## Phase 4: Product integration
 
 - [ ] NikoPay UI: Lightning rail beside USDT
 - [ ] Receipts + realtime status (BTC received / RWF sent)
 - [ ] Limits, fraud checks, support tooling
 - [ ] Airtel Money adapter (same `momo-gateway` interface)
 
-## Phase 5 — Taproot Assets (supervisor track)
+## Phase 5: Taproot Assets (supervisor track)
 
 - [ ] Evaluate USDT/stable asset on LN via `tapd`
 - [ ] Edge node / swap design vs plain BTC offramp

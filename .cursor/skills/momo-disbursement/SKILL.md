@@ -31,7 +31,7 @@ Portal: https://momodeveloper.mtn.com/
 3. Use `Bearer` access token on disbursement calls  
 4. Refresh token before expiry  
 
-Collections vs Disbursements use **separate** subscription keys and credentials — do not mix.
+Collections vs Disbursements use **separate** subscription keys and credentials: do not mix.
 
 ## Transfer
 
@@ -39,14 +39,14 @@ Collections vs Disbursements use **separate** subscription keys and credentials 
 POST {BASE}/disbursement/v1_0/transfer
 Headers:
   Authorization: Bearer {token}
-  X-Reference-Id: {uuid}          # idempotency key — REQUIRED unique per logical payout
+  X-Reference-Id: {uuid}          # idempotency key: REQUIRED unique per logical payout
   X-Target-Environment: sandbox | <rwanda-prod-env>
   Ocp-Apim-Subscription-Key: {disbursement_key}
   Content-Type: application/json
 
 Body:
   amount: "50000"                 # string decimal in RWF major units per MoMo docs
-  currency: "RWF"                 # sandbox may use currency quirks — verify against portal
+  currency: "RWF"                 # sandbox may use currency quirks: verify against portal
   externalId: "{offramp_id}"
   payee: { partyIdType: "MSISDN", partyId: "2507..." }
   payerMessage: "NikoPay"
@@ -81,7 +81,7 @@ Sandbox base: `https://sandbox.momodeveloper.mtn.com`
 |-------------|-----------|
 | SUCCESSFUL | `SettleInvoice` |
 | FAILED | `CancelInvoice` |
-| UNKNOWN after retries | `MANUAL_REVIEW` — no settle, no second reference |
+| UNKNOWN after retries | `MANUAL_REVIEW`: no settle, no second reference |
 
 ## Float
 

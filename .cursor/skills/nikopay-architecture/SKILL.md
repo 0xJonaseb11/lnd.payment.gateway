@@ -10,9 +10,9 @@ description: >-
 
 ## Start here every time
 
-1. [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md) — system design  
-2. [docs/PROJECT_STRUCTURE.md](../../../docs/PROJECT_STRUCTURE.md) — where code goes  
-3. [docs/ROADMAP.md](../../../docs/ROADMAP.md) — phase gates  
+1. [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md): system design  
+2. [docs/PROJECT_STRUCTURE.md](../../../docs/PROJECT_STRUCTURE.md): where code goes  
+3. [docs/ROADMAP.md](../../../docs/ROADMAP.md): phase gates  
 4. Domain skill for the task (`lightning-rwf-offramp`, `lnd-operations`, `momo-disbursement`, …)
 
 ## Repo layout (do not invent parallel trees)
@@ -37,11 +37,15 @@ docs/
 
 ## Conventions
 
-- Money: integer `msat`, integer RWF (agree minor/major in `packages/shared` and stick to it)
+- Full bar: [docs/CODING_STANDARDS.md](../../../docs/CODING_STANDARDS.md) + `.cursor/rules/*`
+- **No comments** in TS/app code; **NatSpec only** on Solidity
+- No em dashes or AI-sounding copy; sentence case; follow NikoPay UI theme only
+- Money: integer `msat`, integer RWF (agree in `packages/shared` and stick to it)
 - IDs: opaque `offramp_id`; MoMo reference derived deterministically
 - Errors: typed codes; never leak macaroons/MSISDN in client errors
 - Secrets: env / secret manager only
-- Tests: orchestration tests with mocked LN + MoMo; one simnet e2e smoke
+- Tests: orchestration with mocked LN + MoMo; one simnet smoke
+- Efficiency: thin handlers, subscribe over poll storms, no N+1 on accept path
 
 ## Scaffolding order
 

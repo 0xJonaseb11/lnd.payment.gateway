@@ -1,11 +1,11 @@
-# MoMo disbursement — reference
+# MoMo disbursement: reference
 
 ## Products (portal)
 
 | Product | NikoPay use |
 |---------|-------------|
-| Disbursements | **Primary** — pay out RWF |
-| Collections | Optional — customer deposits / other products |
+| Disbursements | **Primary**: pay out RWF |
+| Collections | Optional: customer deposits / other products |
 | Remittance | Evaluate later for cross-border |
 
 ## Env vars (names)

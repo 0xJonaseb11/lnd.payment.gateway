@@ -17,7 +17,7 @@ Two parties lock coins in a **2-of-2 multisig funding tx** (channel). They updat
 
 | On-chain BTC | Lightning |
 |--------------|-----------|
-| ~10 min+ confirms | ms–seconds once channels exist |
+| ~10 min+ confirms | ms-seconds once channels exist |
 | Fee per payment | Amortized channel fees + tiny routing fees |
 | Poor micropayments | Natural for remittance slices |
 
@@ -40,7 +40,7 @@ Two parties lock coins in a **2-of-2 multisig funding tx** (channel). They updat
 ### Invoices (BOLT11)
 
 - Encode amount, payment hash, expiry, destination, optional routing hints
-- **Single-use** — never reuse an invoice after fulfillment (preimage known)
+- **Single-use**: never reuse an invoice after fulfillment (preimage known)
 - Expired invoices must not be paid or accepted for goods
 
 ### Hold (HODL) invoices
@@ -57,5 +57,5 @@ Two parties lock coins in a **2-of-2 multisig funding tx** (channel). They updat
 
 ## Deeper reading
 
-- [reference.md](reference.md) — quotes from LND overview + paper pointers
+- [reference.md](reference.md): quotes from LND overview + paper pointers
 - [docs/RESOURCES.md](../../../docs/RESOURCES.md)

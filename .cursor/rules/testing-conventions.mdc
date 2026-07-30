@@ -1,0 +1,26 @@
+---
+description: Testing standards: focused, deterministic, no flaky network in unit tests
+globs: "**/*.{test,spec}.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing conventions
+
+## Pyramid
+
+1. **Unit**: pure domain (state machine, FX math, id derivation) with no I/O.
+2. **Collaboration**: offramp service with mocked `ln` + `momo` ports.
+3. **Smoke**: one simnet/regtest path (optional CI job); not every PR blocker early on.
+
+## Rules
+
+- Test behavior and invariants, not implementation chatter.
+- Deterministic: fake timers, fixed UUIDs/seeds where needed.
+- No real MoMo/LND in unit tests: inject fakes.
+- Cover: happy path, MoMo fail → cancel, duplicate webhook, expired quote, illegal transition.
+- Name: `should_<behavior>_when_<condition>` or equivalent clear intent.
+
+## Efficiency
+
+- Prefer fast unit/collaboration tests; keep e2e minimal.
+- Assert on status + side-effect calls (`settle` once, `transfer` once), not snapshots of entire objects unless stable DTOs.
