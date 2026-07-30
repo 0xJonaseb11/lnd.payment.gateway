@@ -1,0 +1,45 @@
+# Local Cursor state (keep skills + rules versioned)
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**
+!.cursor/rules/
+!.cursor/rules/**
+
+#env
+.env
+.env.*
+!.env.example
+
+# secrets / node data
+*.macaroon
+*.pem
+*.key
+tls.cert
+tls.key
+admin.macaroon
+readonly.macaroon
+invoice.macaroon
+
+# deps / build
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.turbo/
+*.tsbuildinfo
+
+# OS / IDE
+.DS_Store
+.idea/
+*.swp
+*.swo
+
+# logs
+*.log
+logs/
+
+# bitcoin / lnd local data (never commit)
+infra/docker/data/
+lnd-data/
+bitcoin-data/

@@ -1,0 +1,14 @@
+---
+description: NikoPay Lightning mission and agent routing — always apply
+alwaysApply: true
+---
+
+# NikoPay Lightning — standing orders
+
+- Mission: **Lightning BTC → RWF MoMo** for NikoPay with ~1s LN finality on the crypto leg.
+- Before coding: read `AGENTS.md`, then skills `nikopay-architecture` and `lightning-rwf-offramp`.
+- Source of truth: `docs/ARCHITECTURE.md`, `docs/OFFRAMP_FLOW.md`, `docs/PROJECT_STRUCTURE.md`, `docs/ROADMAP.md`.
+- Default path: **LND + hold invoices + MoMo Disbursements**. Not BitGo-first. Not Taproot-Assets-first.
+- Place code under `services/*` and `packages/*` as documented.
+- Never commit macaroons, TLS keys, or MoMo secrets.
+- UX: distinguish **Bitcoin received** from **RWF delivered**.

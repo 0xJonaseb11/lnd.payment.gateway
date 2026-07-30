@@ -1,0 +1,44 @@
+---
+description: Clean code quality — minimal comments, efficiency, consistency
+alwaysApply: true
+---
+
+# Coding quality
+
+## Comments
+
+- **No comments** in application code. Names, types, and structure must carry meaning.
+- **Exception:** Solidity / smart contracts — use **NatSpec** (`@title`, `@notice`, `@param`, `@return`, `@dev` only when non-obvious).
+- Never narrate (`// increment i`, `// call MoMo`). Never leave TODOs that mask unfinished design.
+- Prefer deleting dead code over commenting it out.
+
+## Efficiency
+
+- Do the smallest change that solves the task — no speculative abstractions.
+- No unused imports, variables, exports, or dependencies.
+- Avoid N+1 queries, unbounded loops over network I/O, and sync work on hot paths.
+- Hot paths (invoice accept → disburse): minimize allocations; prefer streaming/subscribe over poll storms.
+- Integer money only (`msat`, RWF). Never `number` floats for value.
+
+## Consistency
+
+- Match existing naming, file layout, and patterns in the touched package.
+- One style per concern: errors, logging, validation, HTTP handlers.
+- Public APIs: stable names from `docs/OFFRAMP_FLOW.md` / `packages/shared`.
+
+## Structure
+
+- Functions do one thing; early return over deep nesting.
+- Pure domain logic free of HTTP/gRPC/MoMo clients — inject ports at edges.
+- No god files; split by feature when a module exceeds clear responsibility.
+
+## Forbidden
+
+```ts
+// ❌ BAD
+// Settle the invoice after MoMo succeeds
+await settle(preimage);
+
+// ✅ GOOD
+await settle(preimage);
+```
