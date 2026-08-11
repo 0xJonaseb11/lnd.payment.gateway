@@ -1,5 +1,9 @@
-# Docker / local Lightning
+# Local Lightning
 
-Add Compose stack here (bitcoind or btcd + LND) in Roadmap Phase 0.
+Default development uses `LN_BACKEND=memory` in `network-api` (hold invoices in process, no node required).
 
-Until then, follow skill `lnd-operations` and https://dev.lightning.community/guides/installation/
+When you are ready for a real LND:
+
+1. Follow skill `lnd-operations` and https://dev.lightning.community/guides/installation/
+2. Point `LND_REST_HOST`, `LND_TLS_CERT_PATH`, and `LND_MACAROON_PATH` in `.env`
+3. Keep MoMo on `memory` until sandbox keys exist

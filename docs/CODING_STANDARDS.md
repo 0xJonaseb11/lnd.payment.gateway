@@ -68,7 +68,7 @@ Details: `.cursor/rules/voice-and-copy.mdc`, `.cursor/rules/frontend-ui.mdc`.
 | `voice-and-copy.mdc` | Always |
 | `typescript-conventions.mdc` | `*.ts` / `*.tsx` |
 | `service-layering.mdc` | `services/**` |
-| `api-conventions.mdc` | `services/offramp-api/**` |
+| `api-conventions.mdc` | `services/network-api/**` |
 | `frontend-ui.mdc` | UI files |
 | `testing-conventions.mdc` | `*.test.ts` / `*.spec.ts` |
 | `solidity-natspec.mdc` | `*.sol` |

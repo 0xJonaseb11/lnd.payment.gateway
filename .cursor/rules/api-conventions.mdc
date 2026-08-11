@@ -1,6 +1,6 @@
 ---
-description: API and DTO conventions for offramp HTTP surfaces
-globs: "services/offramp-api/**/*.{ts,tsx}"
+description: API and DTO conventions for network HTTP surfaces
+globs: "services/network-api/**/*.{ts,tsx}"
 alwaysApply: false
 ---
 
@@ -14,21 +14,21 @@ alwaysApply: false
 
 ## Responses
 
-- Success: explicit DTO; no raw DB rows.
+- Success: explicit DTO; no raw store rows.
 - Errors: `{ "error": { "code": "QUOTE_EXPIRED", "message": "..." } }`: stable `code`, safe `message`.
-- Never return macaroons, preimages (except settle internals), or full MSISDNs in logs/error payloads (mask).
+- Never return macaroons, preimages, or full MSISDNs in logs/error payloads (mask).
 
 ## HTTP semantics
 
 | Action | Status |
 |--------|--------|
-| Quote created | `201` |
+| Payment created | `201` |
 | Status fetch | `200` |
 | Validation fail | `400` |
-| Business reject (float/liquidity) | `409` or `503` as documented |
+| Business reject (float/liquidity) | `409` or `503` |
 | Unknown id | `404` |
 
 ## Efficiency
 
-- Quote endpoint: cheap FX + invoice create; no MoMo transfer.
-- Status endpoint: read model only: no side effects.
+- Create endpoint: FX + invoice only. No MoMo transfer.
+- Status endpoint: read model only. No side effects.

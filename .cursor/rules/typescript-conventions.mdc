@@ -9,7 +9,7 @@ alwaysApply: false
 ## Types
 
 - `strict` TypeScript. No `any`. Prefer `unknown` + narrow at boundaries.
-- Branded / nominal types for money and IDs (`Msats`, `Rwf`, `OfframpId`).
+- Branded / nominal types for money and IDs (`Msat`, `Rwf`, `UsdtMicros`, payment id).
 - Shared domain types live in `packages/shared`: do not duplicate enums/status strings.
 - Prefer `readonly` and `as const` for config and status unions.
 

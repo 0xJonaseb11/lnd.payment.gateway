@@ -10,35 +10,34 @@ alwaysApply: false
 
 | Package | May call |
 |---------|----------|
-| `offramp-api` | `fx-rate`, `ln-gateway`, `momo-gateway`, DB |
+| `network-api` | `fx-rate`, `ln-gateway`, `momo-gateway`, store |
 | `ln-gateway` | LND only |
 | `momo-gateway` | MoMo HTTP only |
 | `fx-rate` | FX sources only |
 
-- Orchestration lives in `offramp-api` (or a dedicated worker), not inside gateways.
+- Orchestration lives in `network-api`, not inside gateways.
 - Gateways expose small ports: `addHoldInvoice`, `settle`, `cancel`, `transfer`, `getStatus`.
 
 ## Handlers
 
 ```ts
-// ✅ thin HTTP → validate → service → map response
-export async function postQuote(req, reply) {
-  const input = QuoteSchema.parse(req.body);
-  const result = await offrampService.createQuote(input);
-  return reply.code(201).send(toQuoteResponse(result));
+export async function postPayment(c) {
+  const input = CreatePaymentBody.parse(await c.req.json());
+  const result = await network.create(input);
+  return c.json(toPaymentResponse(result), 201);
 }
 ```
 
 - No business rules in route files.
-- No raw gRPC/MoMo types leaking into HTTP JSON: map to public DTOs.
+- No raw gRPC/MoMo types leaking into HTTP JSON. Map to public DTOs.
 
-## Idempotency & state
+## Idempotency and state
 
-- Every mutation keyed by `offramp_id` or deterministic MoMo `X-Reference-Id`.
-- State transitions: conditional update (`WHERE status = :from`). Fail loud on conflict.
-- Retries reuse the same idempotency key: never mint a second payout reference.
+- Every mutation keyed by `payment_id` or deterministic MoMo `X-Reference-Id`.
+- State transitions: conditional update. Fail loud on conflict.
+- Retries reuse the same idempotency key. Never mint a second payout reference.
 
 ## Efficiency on the accept path
 
-- On `LN_ACCEPTED`: enqueue disburse immediately; do not block the gRPC subscription handler on MoMo round-trips beyond a short handoff.
-- Prefer one subscription stream per process over per-request polling.
+- On `LN_ACCEPTED`: hand off disburse immediately. Do not block the invoice subscription on extra work beyond that call.
+- Prefer one subscription stream per process over tight poll loops.

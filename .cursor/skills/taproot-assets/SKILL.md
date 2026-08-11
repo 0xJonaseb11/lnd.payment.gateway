@@ -10,7 +10,7 @@ description: >-
 
 ## When to use this skill
 
-Only after **BTC Lightning → RWF** Phase 1-3 works (`docs/ROADMAP.md`). Supervisor flagged Taproot Assets as architecturally important for multi-asset LN: it is **not** the v1 critical path.
+Only after the LND payment network and MoMo rail are stable (`docs/ROADMAP.md` Phase 5). Taproot Assets is how stablecoins move *on* Lightning channels. v1 already *denominates* in USDT micros while settling BTC hold invoices.
 
 ## What it is
 
