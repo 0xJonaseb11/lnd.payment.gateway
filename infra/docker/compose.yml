@@ -1,0 +1,47 @@
+services:
+  bitcoind:
+    image: lncm/bitcoind:v27.0
+    command:
+      - -regtest
+      - -server
+      - -rpcuser=ln
+      - -rpcpassword=ln
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -zmqpubrawblock=tcp://0.0.0.0:28332
+      - -zmqpubrawtx=tcp://0.0.0.0:28333
+      - -fallbackfee=0.0002
+    volumes:
+      - ./data/bitcoind:/data/.bitcoin
+    networks:
+      - lnnet
+
+  lnd:
+    image: lightninglabs/lnd:v0.18.5-beta
+    depends_on:
+      - bitcoind
+    volumes:
+      - ./data/lnd:/root/.lnd
+    ports:
+      - "10009:10009"
+      - "8080:8080"
+      - "9735:9735"
+    command:
+      - --noseedbackup
+      - --bitcoin.active
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=bitcoind:18443
+      - --bitcoind.rpcuser=ln
+      - --bitcoind.rpcpass=ln
+      - --bitcoind.zmqpubrawblock=tcp://bitcoind:28332
+      - --bitcoind.zmqpubrawtx=tcp://bitcoind:28333
+      - --rpclisten=0.0.0.0:10009
+      - --restlisten=0.0.0.0:8080
+      - --listen=0.0.0.0:9735
+      - --tlsextradomain=lnd
+    networks:
+      - lnnet
+
+networks:
+  lnnet:

@@ -43,3 +43,4 @@ logs/
 infra/docker/data/
 lnd-data/
 bitcoin-data/
+data/

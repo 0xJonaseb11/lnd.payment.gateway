@@ -24,7 +24,7 @@ alwaysApply: true
 
 - Match existing naming, file layout, and patterns in the touched package.
 - One style per concern: errors, logging, validation, HTTP handlers.
-- Public APIs: stable names from `docs/OFFRAMP_FLOW.md` / `packages/shared`.
+- Public APIs: stable names from `docs/OFFRAMP_FLOW.md` and `packages/shared`.
 - Copy and UI voice: see `voice-and-copy.mdc` and `frontend-ui.mdc` (no AI-sounding text, no em dashes, no invented themes).
 
 ## Structure

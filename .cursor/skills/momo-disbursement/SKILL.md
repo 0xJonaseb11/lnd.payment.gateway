@@ -47,7 +47,7 @@ Headers:
 Body:
   amount: "50000"                 # string decimal in RWF major units per MoMo docs
   currency: "RWF"                 # sandbox may use currency quirks: verify against portal
-  externalId: "{offramp_id}"
+  externalId: "{payment_id}"
   payee: { partyIdType: "MSISDN", partyId: "2507..." }
   payerMessage: "NikoPay"
   payeeNote: "NikoPay offramp"
@@ -89,7 +89,7 @@ Before issuing quotes, check disbursement account balance. If below threshold + 
 
 ## Airtel later
 
-Implement a second adapter behind the same interface (`transfer`, `getStatus`, `getBalance`). Do not fork offramp-api logic.
+Implement a second adapter behind the same interface (`transfer`, `getStatus`, `getBalance`). Do not fork network-api logic.
 
 ## Related
 

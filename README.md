@@ -1,28 +1,42 @@
-# NikoPay Lightning (LND learning + offramp service)
+# LN payment network
 
-Build the **Bitcoin Lightning → RWF Mobile Money** rail for [NikoPay](https://www.nikopay.rw/).
+Lightning Network service that processes **stablecoin-denominated** payments (USDT micros) with hold invoices, and offramps to **RWF via MTN MoMo**.
 
 ## Start here
 
 | Audience | Start |
 |----------|--------|
-| Humans | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) → [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| Agents | [`AGENTS.md`](AGENTS.md) → `.cursor/skills/` |
+| Humans | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Agents | [`AGENTS.md`](AGENTS.md) |
 
-## Goal
+## Run
 
-User pays a Lightning invoice → NikoPay receives sats (~1s finality) → MTN MoMo (then Airtel) credits **RWF**.
+```
+cp .env.example .env
+npm test
+npm run dev
+```
+
+Create a MoMo offramp:
+
+```
+curl -s localhost:8787/v1/payments \
+  -H 'content-type: application/json' \
+  -d '{"rail":"momo_rwf","amount_rwf":1350,"msisdn":"250788123456"}'
+```
+
+With `LN_BACKEND=memory`, complete it:
+
+```
+curl -s -X POST localhost:8787/v1/dev/pay/pay_...
+```
 
 ## Layout
 
 ```
-docs/           Blueprints
-.cursor/skills/ Agent skills (primary)
-services/       offramp-api, ln-gateway, momo-gateway, …
-packages/       shared types/config
-infra/docker/   Local LND stack (forthcoming)
+packages/shared     money, status, errors
+services/ln-gateway LightningPort
+services/momo-gateway MoMo disbursement
+services/fx-rate    integer quotes
+services/network-api HTTP + orchestration
 ```
-
-## Status
-
-Blueprint + skills complete. Implementation follows `docs/ROADMAP.md` Phase 0+.

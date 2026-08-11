@@ -18,7 +18,7 @@ description: >-
 ## Repo layout (do not invent parallel trees)
 
 ```
-services/offramp-api|ln-gateway|momo-gateway|fx-rate|reconciliation
+services/network-api|ln-gateway|momo-gateway|fx-rate
 packages/shared|config
 infra/docker
 docs/
@@ -41,7 +41,7 @@ docs/
 - **No comments** in TS/app code; **NatSpec only** on Solidity
 - No em dashes or AI-sounding copy; sentence case; follow NikoPay UI theme only
 - Money: integer `msat`, integer RWF (agree in `packages/shared` and stick to it)
-- IDs: opaque `offramp_id`; MoMo reference derived deterministically
+- IDs: opaque `payment_id`; MoMo reference derived deterministically
 - Errors: typed codes; never leak macaroons/MSISDN in client errors
 - Secrets: env / secret manager only
 - Tests: orchestration with mocked LN + MoMo; one simnet smoke
@@ -50,8 +50,7 @@ docs/
 ## Scaffolding order
 
 ```
-Phase 0 docker lnd → Phase 1 ln-gateway + shared → Phase 2 momo-gateway
-→ wire offramp-api → fx-rate real → reconciliation
+shared + ports → network-api (done) → real LND adapter → MoMo sandbox HTTP → Postgres
 ```
 
 ## Anti-patterns
@@ -63,4 +62,4 @@ Phase 0 docker lnd → Phase 1 ln-gateway + shared → Phase 2 momo-gateway
 
 ## When stuck
 
-Re-read `lightning-rwf-offramp` + `OFFRAMP_FLOW.md`. If product scope unclear, `nikopay-mission`.
+Re-read `ln-payment-network` + `OFFRAMP_FLOW.md`. NikoPay product questions: `nikopay-mission`.

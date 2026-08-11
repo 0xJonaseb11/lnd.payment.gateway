@@ -1,115 +1,83 @@
-# Offramp flow: Lightning BTC → RWF MoMo
+# Offramp flow: Lightning → RWF MoMo
 
-Canonical happy path and failure paths for agents implementing NikoPay Lightning.
+MoMo is one rail on the LN payment network. Canonical path for `rail: momo_rwf`.
 
-## Actors
-
-- **Sender**: Pays BOLT11 from any LN wallet (Phoenix, Zeus, etc.)
-- **NikoPay offramp-api**: Quotes, orchestrates, tracks
-- **LND**: Receives payment (hold invoice)
-- **MTN MoMo**: Credits recipient MSISDN in RWF
-- **Recipient**: Mobile Money user in Rwanda
-
-## Sequence (hold invoice: recommended)
+## Sequence
 
 ```mermaid
 sequenceDiagram
   participant W as Sender wallet
-  participant API as offramp-api
+  participant API as network-api
   participant FX as fx-rate
-  participant LN as ln-gateway/LND
+  participant LN as ln-gateway
   participant MM as momo-gateway
   participant MoMo as MTN MoMo
 
-  W->>API: POST /v1/offramp/quote (rwf, msisdn)
-  API->>FX: lock rate + fees
-  FX-->>API: sats amount, expires_at
-  API->>LN: AddHoldInvoice(sats, payment_hash)
-  LN-->>API: BOLT11
-  API-->>W: quote_id, bolt11, rate, expires_at
+  W->>API: POST /v1/payments (momo_rwf, rwf, msisdn)
+  API->>FX: lock USDT + msat
+  API->>LN: addHoldInvoice
+  API-->>W: payment_id, bolt11, expires_at
 
   W->>LN: pay invoice (HTLC)
-  LN-->>API: invoice ACCEPTED (SubscribeInvoices)
-  Note over API: state = LN_ACCEPTED<br/>crypto finality signal (~ms-s)
+  LN-->>API: accepted
+  Note over API: LN_ACCEPTED (crypto finality)
 
   API->>MM: transfer(rwf, msisdn, X-Reference-Id)
   MM->>MoMo: POST disbursement/v1_0/transfer
-  MoMo-->>MM: accepted
-  loop poll / webhook
-    MM->>MoMo: GET transfer status
-  end
   MoMo-->>MM: SUCCESSFUL
-  MM-->>API: momo success
-  API->>LN: SettleInvoice(preimage)
-  LN-->>W: payment settled
-  API-->>W: status COMPLETE (RWF delivered)
+  API->>LN: settle(preimage)
+  API-->>W: COMPLETE (RWF delivered)
 ```
 
-## Why hold invoices
-
-| Mode | Behavior | Risk |
-|------|----------|------|
-| **Normal invoice** | Settles LN immediately on payment | If MoMo fails, NikoPay owes RWF or must manually refund BTC |
-| **Hold invoice** | Accept HTLC → disburse → settle only on MoMo success | MoMo/API outage → timeout refunds sats automatically |
-
-For ~1s *crypto* finality with safer *fiat* coupling, use **hold invoices** with HTLC expiry ≥ MoMo worst-case latency (often ≥ 60s; tune with ops data).
-
-## Quote request / response (shape)
+## Request / response
 
 ```json
-// POST /v1/offramp/quote
 {
-  "amount_rwf": 50000,
-  "destination": { "type": "mtn_momo", "msisdn": "250788123456" },
-  "webhook_url": "https://optional.example/hook"
+  "rail": "momo_rwf",
+  "amount_rwf": 1350,
+  "msisdn": "250788123456"
 }
 ```
 
 ```json
 {
-  "offramp_id": "np_ln_01HXYZ...",
-  "bolt11": "lnbc...",
-  "amount_msat": "4123456000",
-  "rate": { "btc_rwf": 95000000, "fee_rwf": 750, "fee_bps": 150 },
-  "expires_at": "2026-07-30T14:02:00Z",
-  "status": "INVOICE_ISSUED"
+  "payment_id": "pay_...",
+  "rail": "momo_rwf",
+  "status": "INVOICE_ISSUED",
+  "bolt11": "lnmem1...",
+  "amount_msat": "1068422",
+  "amount_usdt_micros": "1000000",
+  "amount_rwf": "1350",
+  "fee_bps": "150",
+  "expires_at": "2026-08-11T08:02:00.000Z"
 }
 ```
 
-## Status values
+Ledger rail (stable balance, no MoMo):
 
-Use exactly these in code and APIs (see `packages/shared`):
+```json
+{
+  "rail": "ledger",
+  "amount_usdt_micros": "2000000",
+  "account_id": "acc_demo"
+}
+```
 
-`CREATED` · `QUOTED` · `INVOICE_ISSUED` · `LN_ACCEPTED` · `DISBURSING` · `MOMO_SUCCESS` · `LN_SETTLED` · `COMPLETE` · `MOMO_FAILED` · `LN_CANCELED` · `REFUNDED` · `MOMO_UNKNOWN` · `MANUAL_REVIEW` · `EXPIRED`
+## Statuses
+
+`INVOICE_ISSUED` · `LN_ACCEPTED` · `DISBURSING` · `COMPLETE` · `REFUNDED` · `MANUAL_REVIEW` · `EXPIRED`
 
 ## Failure paths
 
-1. **Quote expired before pay** → reject payment / let invoice expire; no MoMo call.
-2. **Insufficient MoMo float at quote time** → `503` / business error; do not issue invoice.
-3. **Insufficient inbound LN liquidity** → same; do not issue invoice.
-4. **LN never pays** → invoice expires; terminal `EXPIRED`.
-5. **MoMo FAILED after LN_ACCEPTED** → `CancelInvoice`; state `REFUNDED`.
-6. **MoMo status stuck** → retries with backoff → `MANUAL_REVIEW` (ops); **do not** settle LN until confirmed success; **do not** re-transfer without idempotent key reuse check.
+1. Quote expired before pay → `EXPIRED`, cancel hold, no MoMo.
+2. MoMo float or inbound LN too low → `503`, no invoice.
+3. MoMo FAILED → cancel hold → `REFUNDED`.
+4. MoMo PENDING/unknown → `MANUAL_REVIEW`, do not settle, do not mint a second reference.
+5. Duplicate accept → one transfer (`X-Reference-Id` + status guard).
 
-## Idempotency rules
+## UX stages
 
-- `offramp_id` primary key
-- MoMo `X-Reference-Id` = UUIDv5(namespace, offramp_id): same id on every retry
-- Settle/cancel LN at most once; gate on DB state transitions (conditional updates)
-
-## UX stages (product)
-
-1. **Waiting for Lightning**: show QR / BOLT11  
-2. **Bitcoin received**: LN accepted (crypto finality)  
-3. **Sending to Mobile Money**: disbursing  
-4. **RWF delivered**: COMPLETE + receipt  
-
-Do not claim “instant RWF” if MoMo is still pending; claim **instant Bitcoin settlement** + **fast MoMo payout**.
-
-## Test checklist
-
-- [ ] Simnet/regtest: pay hold invoice → mock MoMo success → settle
-- [ ] Mock MoMo fail → cancel → sender balance restored
-- [ ] Double webhook / double poll does not double-pay
-- [ ] Quote TTL enforced
-- [ ] Low float blocks quotes
+1. Waiting for Lightning
+2. Bitcoin received
+3. Sending to Mobile Money
+4. RWF delivered

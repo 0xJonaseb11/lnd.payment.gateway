@@ -1,16 +1,17 @@
 ---
-description: NikoPay Lightning mission and agent routing: always apply
+description: LN payment network standing orders: always apply
 alwaysApply: true
 ---
 
-# NikoPay Lightning: standing orders
+# LN payment network: standing orders
 
-- Mission: **Lightning BTC → RWF MoMo** for NikoPay with ~1s LN finality on the crypto leg.
-- Before coding: read `AGENTS.md`, then skills `nikopay-architecture` and `lightning-rwf-offramp`.
+- Mission: **LND payment network** for stablecoin-denominated payments, ~1s LN finality, **MoMo RWF offramp**.
+- NikoPay is a client of this network, not the whole product.
+- Before coding: read `AGENTS.md`, then skills `ln-payment-network` and `lightning-rwf-offramp`.
 - Source of truth: `docs/ARCHITECTURE.md`, `docs/OFFRAMP_FLOW.md`, `docs/PROJECT_STRUCTURE.md`, `docs/ROADMAP.md`, `docs/CODING_STANDARDS.md`.
-- Default path: **LND + hold invoices + MoMo Disbursements**. Not BitGo-first. Not Taproot-Assets-first.
-- Place code under `services/*` and `packages/*` as documented.
+- Default path: **LND hold invoices + MoMo Disbursements**. Not BitGo-first. Taproot Assets is later.
+- Place code under `services/*` and `packages/*`. Orchestration lives in `network-api`.
 - Never commit macaroons, TLS keys, or MoMo secrets.
 - UX: distinguish **Bitcoin received** from **RWF delivered**.
 - Code quality: obey `.cursor/rules/coding-quality.mdc`. No comments (NatSpec on Solidity only), typed boundaries, efficient hot paths.
-- Voice/UI: obey `voice-and-copy.mdc` and `frontend-ui.mdc`. No em dashes, no AI filler, no Title Case spam, no invented themes. Match NikoPay.
+- Voice/UI: obey `voice-and-copy.mdc` and `frontend-ui.mdc`. No em dashes, no AI filler, no Title Case spam, no invented themes.

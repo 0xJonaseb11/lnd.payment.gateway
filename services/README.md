@@ -1,11 +1,8 @@
 # Services
 
-Implementations go here per `docs/PROJECT_STRUCTURE.md`:
+Libraries composed by `network-api`:
 
-- `offramp-api/`
-- `ln-gateway/`
-- `momo-gateway/`
-- `fx-rate/`
-- `reconciliation/`
-
-Scaffold when Phase 1 starts (`docs/ROADMAP.md`).
+- `network-api/` HTTP and orchestration
+- `ln-gateway/` LightningPort
+- `momo-gateway/` MoMo disbursement
+- `fx-rate/` quotes

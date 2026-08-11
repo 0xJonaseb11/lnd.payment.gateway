@@ -13,7 +13,7 @@ description: >-
 
 **NikoPay** ([nikopay.rw](https://www.nikopay.rw/)) makes crypto spendable in Rwanda as **RWF on Mobile Money** (MTN MoMo first; Airtel later).
 
-Today’s live narrative is **USDT (TRC20) → MTN MoMo**. This repository exists to add a **Bitcoin Lightning → RWF MoMo** rail with **~1 second finality on the crypto leg**.
+Today’s live narrative is **USDT (TRC20) → MTN MoMo**. This repository is the **LND payment network** (stablecoin units, hold invoices) with **MoMo RWF** as the offramp. NikoPay is a client of that network.
 
 ## Why Lightning
 

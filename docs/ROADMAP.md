@@ -1,64 +1,39 @@
-# Roadmap: Lightning → RWF for NikoPay
+# Roadmap: LN payment network
 
-Agents should implement in phase order. Do not skip liquidity/idempotency foundations.
+## Phase 0: Agent readiness
 
-## Phase 0: Agent readiness (this repo)
+- [x] Skills, rules, blueprints
+- [x] Shared domain + ports + network-api
+- [x] Vitest: momo success/fail/unknown, duplicate accept, expiry, float gate, ledger rail
+- [x] Compose stack for real LND (optional beside memory backend)
 
-- [x] Restructured `AGENTS.md`
-- [x] Architecture + structure + flow docs
-- [x] Project skills under `.cursor/skills/`
-- [ ] Local Docker: bitcoind/btcd + LND simnet/regtest
-- [ ] Smoke: create invoice, pay, settle
+## Phase 1: Real LND
 
-## Phase 1: LN receive path (no MoMo yet)
+- [x] `LightningPort` REST adapter (`createLndRest`)
+- [x] SubscribeInvoices → `onInvoiceAccepted`
+- [ ] Simnet pay from a second node (ops: run compose, open channel)
 
-- [ ] `packages/shared` status machine + money types
-- [ ] `ln-gateway` gRPC client (macaroon + TLS)
-- [ ] Hold invoice create / subscribe / settle / cancel
-- [ ] `offramp-api` quote stub (fixed FX) → BOLT11
-- [ ] Integration tests on simnet
+## Phase 2: MoMo sandbox
 
-**Exit criteria:** Pay invoice from second LND; API observes `LN_ACCEPTED` then settle.
+- [x] HTTP disbursement client (`createHttpMomo`)
+- [x] Callback/webhook path (`POST /v1/webhooks/momo`)
+- [ ] End-to-end sandbox credit with live MoMo keys
 
-## Phase 2: MoMo sandbox disbursement
+## Phase 3: Persistence and ops
 
-- [ ] `momo-gateway` token + transfer + status
-- [ ] Wire `LN_ACCEPTED` → disbursement with idempotent reference
-- [ ] Settle hold only on MoMo `SUCCESSFUL`
-- [ ] Cancel hold on MoMo `FAILED`
-- [ ] `MANUAL_REVIEW` path for unknown
+- [x] File store (`STORE_PATH`)
+- [x] Live BTC-USD feed (`FX_LIVE=true`)
+- [x] Reconciliation job
+- [x] `/metrics` counters
+- [ ] Postgres when volume needs it
 
-**Exit criteria:** End-to-end simnet LN + MoMo sandbox credit (or recorded sandbox success).
+## Phase 4: Product
 
-## Phase 3: Production hardening
+- [ ] NikoPay UI as a client of `/v1/payments`
+- [x] Airtel destination type behind the same MoMo port
+- [x] Status payload separates rail, provider, and amount_rwf
 
-- [ ] Real FX source + fee policy + quote TTL
-- [ ] Float + inbound liquidity gates
-- [ ] Postgres ledger + reconciliation job
-- [ ] Watchtower / backup / macaroon rotation runbooks
-- [ ] Observability (metrics: accept latency, settle latency, MoMo success rate)
-- [ ] Security review of hot wallet + secrets
+## Phase 5: Taproot Assets
 
-**Exit criteria:** Testnet (or limited mainnet) pilot with ops dashboard.
-
-## Phase 4: Product integration
-
-- [ ] NikoPay UI: Lightning rail beside USDT
-- [ ] Receipts + realtime status (BTC received / RWF sent)
-- [ ] Limits, fraud checks, support tooling
-- [ ] Airtel Money adapter (same `momo-gateway` interface)
-
-## Phase 5: Taproot Assets (supervisor track)
-
-- [ ] Evaluate USDT/stable asset on LN via `tapd`
-- [ ] Edge node / swap design vs plain BTC offramp
-- [ ] Only after Phase 3 stability
-
-## Explicit out of order
-
-| Temptation | Why wait |
-|------------|----------|
-| BitGo before LND | Blocks learning hold-invoice control |
-| Taproot Assets before BTC offramp | Extra moving parts |
-| Mainnet channels before idempotent MoMo | Capital risk |
-| Claiming 1s RWF delivery | MoMo is not LN; UX must be honest |
+- [ ] USDT (or other) on LN via `tapd`
+- [ ] Keep MoMo offramp; swap FX at the edge if needed
