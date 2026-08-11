@@ -1,9 +1,21 @@
 # Local Lightning
 
-Default development uses `LN_BACKEND=memory` in `network-api` (hold invoices in process, no node required).
+Default app mode is `LN_BACKEND=memory` (no node required).
 
-When you are ready for a real LND:
+Regtest node pair:
 
-1. Follow skill `lnd-operations` and https://dev.lightning.community/guides/installation/
-2. Point `LND_REST_HOST`, `LND_TLS_CERT_PATH`, and `LND_MACAROON_PATH` in `.env`
-3. Keep MoMo on `memory` until sandbox keys exist
+```
+docker compose -f infra/docker/compose.yml up -d
+```
+
+Then set:
+
+```
+LN_BACKEND=lnd_rest
+LND_REST_HOST=https://127.0.0.1:8080
+LND_TLS_CERT_PATH=infra/docker/data/lnd/tls.cert
+LND_MACAROON_PATH=infra/docker/data/lnd/data/chain/bitcoin/regtest/admin.macaroon
+LND_TLS_INSECURE=true
+```
+
+Create a wallet with `lncli --network=regtest create` against the container if the node has no wallet yet.

@@ -23,6 +23,10 @@ const EnvSchema = z.object({
   MOMO_API_USER: z.string().optional(),
   MOMO_API_KEY: z.string().optional(),
   MOMO_TARGET_ENV: z.string().default("sandbox"),
+  STORE_PATH: z.string().default(""),
+  FX_LIVE: z.enum(["true", "false"]).default("false"),
+  RECONCILE_MS: z.coerce.number().int().nonnegative().default(15_000),
+  LND_TLS_INSECURE: z.enum(["true", "false"]).default("false"),
 });
 
 export type AppEnv = z.infer<typeof EnvSchema>;
