@@ -1,0 +1,21 @@
+{
+  "name": "@ln/network-api",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@ln/config": "*",
+    "@ln/fx-rate": "*",
+    "@ln/ln-gateway": "*",
+    "@ln/momo-gateway": "*",
+    "@ln/shared": "*",
+    "hono": "^4.7.5",
+    "zod": "^3.24.2"
+  }
+}
