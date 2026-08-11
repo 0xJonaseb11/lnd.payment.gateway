@@ -22,7 +22,7 @@ const ALLOWED: Record<PaymentStatus, readonly PaymentStatus[]> = {
   ],
   COMPLETE: [],
   REFUNDED: [],
-  MANUAL_REVIEW: [],
+  MANUAL_REVIEW: [PaymentStatus.COMPLETE, PaymentStatus.REFUNDED],
   EXPIRED: [],
 };
 

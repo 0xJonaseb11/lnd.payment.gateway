@@ -4,7 +4,14 @@ import {
   createMemoryMomo,
   MomoTransferStatus,
 } from "@ln/momo-gateway";
-import { asMsat, asRwf, asUsdtMicros, PaymentStatus, Rail } from "@ln/shared";
+import {
+  asMsat,
+  asRwf,
+  asUsdtMicros,
+  momoReferenceId,
+  PaymentStatus,
+  Rail,
+} from "@ln/shared";
 import { describe, expect, it } from "vitest";
 import { createNetworkService } from "./service.ts";
 import { createMemoryStore } from "./store.ts";
@@ -31,6 +38,7 @@ describe("network service", () => {
       rail: Rail.momo_rwf,
       amountRwf: asRwf(1350n),
       msisdn: "250788123456",
+      provider: "mtn_momo",
     });
     expect(created.status).toBe(PaymentStatus.INVOICE_ISSUED);
     const done = await network.payForTest(created.id);
@@ -45,6 +53,7 @@ describe("network service", () => {
       rail: Rail.momo_rwf,
       amountRwf: asRwf(1350n),
       msisdn: "250788123456",
+      provider: "mtn_momo",
     });
     const done = await network.payForTest(created.id);
     expect(done.status).toBe(PaymentStatus.REFUNDED);
@@ -57,6 +66,7 @@ describe("network service", () => {
       rail: Rail.momo_rwf,
       amountRwf: asRwf(1350n),
       msisdn: "250788123456",
+      provider: "mtn_momo",
     });
     const done = await network.payForTest(created.id);
     expect(done.status).toBe(PaymentStatus.MANUAL_REVIEW);
@@ -68,6 +78,7 @@ describe("network service", () => {
       rail: Rail.momo_rwf,
       amountRwf: asRwf(1350n),
       msisdn: "250788123456",
+      provider: "mtn_momo",
     });
     await network.payForTest(created.id);
     await network.onInvoiceAccepted(created.paymentHash);
@@ -97,6 +108,7 @@ describe("network service", () => {
       rail: Rail.momo_rwf,
       amountRwf: asRwf(1350n),
       msisdn: "250788123456",
+      provider: "mtn_momo",
     });
     now = new Date("2026-08-11T08:05:00Z");
     const done = await network.payForTest(created.id);
@@ -127,6 +139,7 @@ describe("network service", () => {
         rail: Rail.momo_rwf,
         amountRwf: asRwf(1350n),
         msisdn: "250788123456",
+        provider: "mtn_momo",
       }),
     ).rejects.toMatchObject({ code: "MOMO_FLOAT_LOW" });
   });
@@ -141,5 +154,37 @@ describe("network service", () => {
     const done = await network.payForTest(created.id);
     expect(done.status).toBe(PaymentStatus.COMPLETE);
     expect(network.account("acc_demo").usdt_micros).toBe("2000000");
+  });
+
+  it("completes momo via webhook after pending", async () => {
+    const { network, momo } = harness();
+    momo.setNextStatus(MomoTransferStatus.PENDING);
+    const created = await network.create({
+      rail: Rail.momo_rwf,
+      amountRwf: asRwf(1350n),
+      msisdn: "250788123456",
+      provider: "airtel_momo",
+    });
+    await network.payForTest(created.id);
+    const ref = momoReferenceId(created.id);
+    momo.setStatus(ref, MomoTransferStatus.SUCCESSFUL);
+    const done = await network.onMomoCallback(ref);
+    expect(done.status).toBe(PaymentStatus.COMPLETE);
+    expect(done.destination?.type).toBe("airtel_momo");
+  });
+
+  it("reconciles a pending momo transfer", async () => {
+    const { network, momo } = harness();
+    momo.setNextStatus(MomoTransferStatus.PENDING);
+    const created = await network.create({
+      rail: Rail.momo_rwf,
+      amountRwf: asRwf(1350n),
+      msisdn: "250788123456",
+      provider: "mtn_momo",
+    });
+    await network.payForTest(created.id);
+    momo.setStatus(momoReferenceId(created.id), MomoTransferStatus.FAILED);
+    await network.reconcile();
+    expect(network.get(created.id).status).toBe(PaymentStatus.REFUNDED);
   });
 });

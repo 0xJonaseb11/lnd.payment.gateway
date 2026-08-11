@@ -16,16 +16,19 @@ import {
   Rail,
   randomPreimage,
   toHex,
+  type MomoRail,
   type Payment,
   type Rwf,
   type UsdtMicros,
 } from "@ln/shared";
+import { createMetrics, type Metrics } from "./metrics.ts";
 import type { PaymentStore } from "./store.ts";
 
 export type CreateMomoInput = {
   rail: typeof Rail.momo_rwf;
   amountRwf: Rwf;
   msisdn: string;
+  provider: MomoRail;
 };
 
 export type CreateLedgerInput = {
@@ -40,8 +43,11 @@ export type NetworkService = {
   create(input: CreatePaymentInput): Promise<Payment>;
   get(id: string): Payment;
   onInvoiceAccepted(paymentHashHex: string): Promise<void>;
+  onMomoCallback(referenceId: string): Promise<Payment>;
+  reconcile(): Promise<void>;
   payForTest(id: string): Promise<Payment>;
   account(id: string): { id: string; usdt_micros: string };
+  metrics(): Record<string, number>;
 };
 
 type Deps = {
@@ -50,6 +56,7 @@ type Deps = {
   momo: MomoPort;
   fx: FxPort;
   now: () => Date;
+  metrics?: Metrics;
 };
 
 function requirePayment(store: PaymentStore, id: string): Payment {
@@ -61,6 +68,7 @@ function requirePayment(store: PaymentStore, id: string): Payment {
 }
 
 export function createNetworkService(deps: Deps): NetworkService {
+  const metrics = deps.metrics ?? createMetrics();
   async function create(input: CreatePaymentInput): Promise<Payment> {
     const quote =
       input.rail === Rail.momo_rwf
@@ -101,7 +109,7 @@ export function createNetworkService(deps: Deps): NetworkService {
       feeUsdtMicros: quote.feeUsdtMicros,
       destination:
         input.rail === Rail.momo_rwf
-          ? { type: "mtn_momo", msisdn: input.msisdn }
+          ? { type: input.provider, msisdn: input.msisdn }
           : null,
       accountId: input.rail === Rail.ledger ? input.accountId : null,
       paymentHash: hold.paymentHash,
@@ -132,6 +140,35 @@ export function createNetworkService(deps: Deps): NetworkService {
       PaymentStatus.LN_ACCEPTED,
       PaymentStatus.COMPLETE,
     );
+    metrics.inc("complete");
+  }
+
+  async function applyMomoStatus(payment: Payment, status: string): Promise<void> {
+    const from = payment.status;
+    if (
+      from !== PaymentStatus.DISBURSING &&
+      from !== PaymentStatus.MANUAL_REVIEW
+    ) {
+      return;
+    }
+    if (status === MomoTransferStatus.SUCCESSFUL) {
+      await deps.ln.settle(payment.preimage);
+      deps.store.transition(payment.id, from, PaymentStatus.COMPLETE);
+      metrics.inc("momo_ok");
+      metrics.inc("complete");
+      return;
+    }
+    if (status === MomoTransferStatus.FAILED) {
+      await deps.ln.cancel(payment.paymentHash);
+      deps.store.transition(payment.id, from, PaymentStatus.REFUNDED);
+      metrics.inc("momo_fail");
+      metrics.inc("refunded");
+      return;
+    }
+    if (from === PaymentStatus.DISBURSING) {
+      deps.store.transition(payment.id, from, PaymentStatus.MANUAL_REVIEW);
+      metrics.inc("manual_review");
+    }
   }
 
   async function fulfillMomo(payment: Payment): Promise<void> {
@@ -149,32 +186,7 @@ export function createNetworkService(deps: Deps): NetworkService {
       amountRwf: payment.amountRwf,
       msisdn: payment.destination.msisdn,
     });
-
-    if (result.status === MomoTransferStatus.SUCCESSFUL) {
-      await deps.ln.settle(payment.preimage);
-      deps.store.transition(
-        payment.id,
-        PaymentStatus.DISBURSING,
-        PaymentStatus.COMPLETE,
-      );
-      return;
-    }
-
-    if (result.status === MomoTransferStatus.FAILED) {
-      await deps.ln.cancel(payment.paymentHash);
-      deps.store.transition(
-        payment.id,
-        PaymentStatus.DISBURSING,
-        PaymentStatus.REFUNDED,
-      );
-      return;
-    }
-
-    deps.store.transition(
-      payment.id,
-      PaymentStatus.DISBURSING,
-      PaymentStatus.MANUAL_REVIEW,
-    );
+    await applyMomoStatus(requirePayment(deps.store, payment.id), result.status);
   }
 
   async function onInvoiceAccepted(paymentHashHex: string): Promise<void> {
@@ -201,6 +213,7 @@ export function createNetworkService(deps: Deps): NetworkService {
       PaymentStatus.INVOICE_ISSUED,
       PaymentStatus.LN_ACCEPTED,
     );
+    metrics.inc("ln_accepted");
     const accepted = requirePayment(deps.store, payment.id);
     if (accepted.rail === Rail.ledger) {
       await fulfillLedger(accepted);
@@ -215,6 +228,29 @@ export function createNetworkService(deps: Deps): NetworkService {
       return requirePayment(deps.store, id);
     },
     onInvoiceAccepted,
+    async onMomoCallback(referenceId) {
+      const payment = deps.store
+        .list()
+        .find((row) => momoReferenceId(row.id) === referenceId);
+      if (!payment) {
+        throw new AppError("PAYMENT_NOT_FOUND", "unknown momo reference", 404);
+      }
+      const result = await deps.momo.getStatus(referenceId);
+      await applyMomoStatus(payment, result.status);
+      return requirePayment(deps.store, payment.id);
+    },
+    async reconcile() {
+      for (const row of deps.store.list()) {
+        if (
+          row.status !== PaymentStatus.DISBURSING &&
+          row.status !== PaymentStatus.MANUAL_REVIEW
+        ) {
+          continue;
+        }
+        const result = await deps.momo.getStatus(momoReferenceId(row.id));
+        await applyMomoStatus(row, result.status);
+      }
+    },
     async payForTest(id) {
       const payment = requirePayment(deps.store, id);
       await deps.ln.payForTest(payment.paymentHash);
@@ -223,6 +259,9 @@ export function createNetworkService(deps: Deps): NetworkService {
     account(id) {
       const row = deps.store.getAccount(id);
       return { id: row.id, usdt_micros: row.usdtMicros.toString() };
+    },
+    metrics() {
+      return metrics.snapshot();
     },
   };
 

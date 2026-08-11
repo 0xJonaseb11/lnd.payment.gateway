@@ -25,5 +25,11 @@ export {
   randomPreimage,
   toHex,
 } from "./ids.ts";
-export { Rail, type LedgerAccount, type MomoDestination, type Payment } from "./payment.ts";
+export {
+  Rail,
+  type LedgerAccount,
+  type MomoDestination,
+  type MomoRail,
+  type Payment,
+} from "./payment.ts";
 export { log, type LogLevel } from "./logger.ts";

@@ -1,22 +1,10 @@
+import { loadEnv } from "@ln/config";
 import { describe, expect, it } from "vitest";
 import { createHttpApp } from "./http.ts";
 import { wireNetwork } from "./wiring.ts";
 
 function app() {
-  const { network, allowDevPay } = wireNetwork({
-    PORT: 8787,
-    HOST: "0.0.0.0",
-    LN_BACKEND: "memory",
-    MOMO_BACKEND: "memory",
-    QUOTE_TTL_SECONDS: 120,
-    FEE_BPS: 150n,
-    RWF_PER_USDT: 1350n,
-    USDT_PER_BTC: 95_000n,
-    MOMO_FLOAT_RWF: 10_000_000n,
-    LN_INBOUND_MSAT: 50_000_000_000n,
-    MOMO_BASE_URL: "https://sandbox.momodeveloper.mtn.com",
-    MOMO_TARGET_ENV: "sandbox",
-  });
+  const { network, allowDevPay } = wireNetwork(loadEnv({}));
   return createHttpApp(network, { allowDevPay });
 }
 

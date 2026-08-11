@@ -14,4 +14,10 @@ describe("status", () => {
       assertTransition(PaymentStatus.INVOICE_ISSUED, PaymentStatus.COMPLETE),
     ).toThrow(AppError);
   });
+
+  it("allows manual review to complete", () => {
+    expect(
+      canTransition(PaymentStatus.MANUAL_REVIEW, PaymentStatus.COMPLETE),
+    ).toBe(true);
+  });
 });

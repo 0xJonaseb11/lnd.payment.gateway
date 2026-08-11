@@ -7,6 +7,7 @@ import {
 
 export type MemoryMomo = MomoPort & {
   setNextStatus(status: MomoTransferStatus): void;
+  setStatus(referenceId: string, status: MomoTransferStatus): void;
   transferCount(): number;
 };
 
@@ -18,6 +19,14 @@ export function createMemoryMomo(float: Rwf): MemoryMomo {
   return {
     setNextStatus(status) {
       nextStatus = status;
+    },
+
+    setStatus(referenceId, status) {
+      const existing = transfers.get(referenceId);
+      if (!existing) {
+        throw new AppError("MOMO_NOT_FOUND", "unknown transfer", 404);
+      }
+      transfers.set(referenceId, { ...existing, status });
     },
 
     transferCount() {

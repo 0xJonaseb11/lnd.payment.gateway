@@ -59,6 +59,7 @@ export function createHttpApp(
             rail: Rail.momo_rwf,
             amountRwf: asCreateRwf(body.amount_rwf),
             msisdn: body.msisdn,
+            provider: body.provider,
           })
         : await network.create({
             rail: Rail.ledger,
@@ -74,6 +75,24 @@ export function createHttpApp(
   });
 
   app.get("/v1/accounts/:id", (c) => c.json(network.account(c.req.param("id"))));
+
+  app.get("/metrics", (c) => c.json(network.metrics()));
+
+  app.post("/v1/webhooks/momo", async (c) => {
+    const body = (await c.req.json()) as {
+      referenceId?: string;
+      externalId?: string;
+    };
+    const referenceId = body.referenceId ?? body.externalId;
+    if (!referenceId) {
+      return c.json(
+        { error: { code: "INVALID_BODY", message: "missing referenceId" } },
+        400,
+      );
+    }
+    const payment = await network.onMomoCallback(referenceId);
+    return c.json(toPaymentResponse(payment));
+  });
 
   app.post("/v1/dev/pay/:id", async (c) => {
     if (!options.allowDevPay) {

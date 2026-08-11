@@ -8,6 +8,7 @@ export const CreatePaymentBody = z.discriminatedUnion("rail", [
     rail: z.literal("momo_rwf"),
     amount_rwf: z.number().int().positive().max(5_000_000),
     msisdn: Msisdn,
+    provider: z.enum(["mtn_momo", "airtel_momo"]).default("mtn_momo"),
   }),
   z.object({
     rail: z.literal("ledger"),
@@ -29,6 +30,7 @@ export function toPaymentResponse(payment: Payment) {
     amount_rwf: payment.amountRwf === null ? null : payment.amountRwf.toString(),
     fee_bps: payment.feeBps.toString(),
     fee_usdt_micros: payment.feeUsdtMicros.toString(),
+    provider: payment.destination?.type ?? null,
     msisdn: payment.destination ? maskMsisdn(payment.destination.msisdn) : null,
     account_id: payment.accountId,
     expires_at: payment.expiresAt.toISOString(),

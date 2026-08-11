@@ -8,8 +8,10 @@ export const Rail = {
 
 export type Rail = (typeof Rail)[keyof typeof Rail];
 
+export type MomoRail = "mtn_momo" | "airtel_momo";
+
 export type MomoDestination = {
-  readonly type: "mtn_momo";
+  readonly type: MomoRail;
   readonly msisdn: string;
 };
 
