@@ -5,32 +5,33 @@
 - [x] Skills, rules, blueprints
 - [x] Shared domain + ports + network-api
 - [x] Vitest: momo success/fail/unknown, duplicate accept, expiry, float gate, ledger rail
-- [ ] Compose stack for real LND (optional beside memory backend)
+- [x] Compose stack for real LND (optional beside memory backend)
 
 ## Phase 1: Real LND
 
-- [ ] `LightningPort` REST or gRPC adapter
-- [ ] SubscribeInvoices → `onInvoiceAccepted`
-- [ ] Simnet pay from a second node
+- [x] `LightningPort` REST adapter (`createLndRest`)
+- [x] SubscribeInvoices → `onInvoiceAccepted`
+- [ ] Simnet pay from a second node (ops: run compose, open channel)
 
 ## Phase 2: MoMo sandbox
 
 - [x] HTTP disbursement client (`createHttpMomo`)
-- [ ] End-to-end sandbox credit with `MOMO_BACKEND=http`
-- [ ] Callback/webhook path
+- [x] Callback/webhook path (`POST /v1/webhooks/momo`)
+- [ ] End-to-end sandbox credit with live MoMo keys
 
 ## Phase 3: Persistence and ops
 
-- [ ] Postgres store (replace memory maps)
-- [ ] Real FX source
-- [ ] Reconciliation job
-- [ ] Observability on accept and MoMo success rate
+- [x] File store (`STORE_PATH`)
+- [x] Live BTC-USD feed (`FX_LIVE=true`)
+- [x] Reconciliation job
+- [x] `/metrics` counters
+- [ ] Postgres when volume needs it
 
 ## Phase 4: Product
 
 - [ ] NikoPay UI as a client of `/v1/payments`
-- [ ] Airtel adapter behind `MomoPort`
-- [ ] Receipts: Bitcoin received vs RWF delivered
+- [x] Airtel destination type behind the same MoMo port
+- [x] Status payload separates rail, provider, and amount_rwf
 
 ## Phase 5: Taproot Assets
 

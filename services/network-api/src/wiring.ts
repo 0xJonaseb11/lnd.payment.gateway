@@ -1,12 +1,14 @@
 import { loadEnv, type AppEnv } from "@ln/config";
-import { createStaticFx } from "@ln/fx-rate";
-import { createMemoryLightning } from "@ln/ln-gateway";
+import { createLiveFx, createStaticFx } from "@ln/fx-rate";
+import { createLndRest, createMemoryLightning } from "@ln/ln-gateway";
 import {
   createHttpMomo,
   createMemoryMomo,
   type MomoPort,
 } from "@ln/momo-gateway";
-import { asMsat, asRwf } from "@ln/shared";
+import { AppError, asMsat, asRwf } from "@ln/shared";
+import { createFileStore } from "./file-store.ts";
+import { createMetrics } from "./metrics.ts";
 import { createNetworkService, type NetworkService } from "./service.ts";
 import { createMemoryStore } from "./store.ts";
 
@@ -28,20 +30,40 @@ function momoFromEnv(env: AppEnv): MomoPort {
   return createMemoryMomo(asRwf(env.MOMO_FLOAT_RWF));
 }
 
+function lnFromEnv(env: AppEnv) {
+  if (env.LN_BACKEND === "lnd_rest") {
+    if (!env.LND_REST_HOST || !env.LND_TLS_CERT_PATH || !env.LND_MACAROON_PATH) {
+      throw new AppError("LND_CONFIG", "lnd rest env is incomplete", 500);
+    }
+    return createLndRest({
+      host: env.LND_REST_HOST,
+      tlsCertPath: env.LND_TLS_CERT_PATH,
+      macaroonPath: env.LND_MACAROON_PATH,
+      tlsInsecure: env.LND_TLS_INSECURE === "true",
+    });
+  }
+  return createMemoryLightning(asMsat(env.LN_INBOUND_MSAT));
+}
+
 export function wireNetwork(env: AppEnv = loadEnv()): {
   network: NetworkService;
   allowDevPay: boolean;
+  reconcileMs: number;
 } {
-  const store = createMemoryStore();
-  const ln = createMemoryLightning(asMsat(env.LN_INBOUND_MSAT));
+  const store = env.STORE_PATH
+    ? createFileStore(env.STORE_PATH)
+    : createMemoryStore();
+  const ln = lnFromEnv(env);
   const momo = momoFromEnv(env);
-  const fx = createStaticFx({
+  const fxConfig = {
     feeBps: env.FEE_BPS,
     rwfPerUsdt: env.RWF_PER_USDT,
     usdtPerBtc: env.USDT_PER_BTC,
     ttlSeconds: env.QUOTE_TTL_SECONDS,
     now: () => new Date(),
-  });
+  };
+  const fx =
+    env.FX_LIVE === "true" ? createLiveFx(fxConfig) : createStaticFx(fxConfig);
   return {
     network: createNetworkService({
       store,
@@ -49,7 +71,9 @@ export function wireNetwork(env: AppEnv = loadEnv()): {
       momo,
       fx,
       now: () => new Date(),
+      metrics: createMetrics(),
     }),
     allowDevPay: env.LN_BACKEND === "memory",
+    reconcileMs: env.RECONCILE_MS,
   };
 }

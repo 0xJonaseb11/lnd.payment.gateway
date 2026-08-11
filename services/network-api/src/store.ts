@@ -12,6 +12,7 @@ export type PaymentStore = {
   insert(payment: Payment): void;
   get(id: string): Payment | undefined;
   byPaymentHash(hash: string): Payment | undefined;
+  list(): Payment[];
   transition(
     id: string,
     from: PaymentStatus,
@@ -43,6 +44,10 @@ export function createMemoryStore(): PaymentStore {
     byPaymentHash(hash) {
       const id = byHash.get(hash);
       return id ? payments.get(id) : undefined;
+    },
+
+    list() {
+      return [...payments.values()];
     },
 
     transition(id, from, to, patch) {
