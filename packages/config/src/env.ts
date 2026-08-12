@@ -27,6 +27,9 @@ const EnvSchema = z.object({
   FX_LIVE: z.enum(["true", "false"]).default("false"),
   RECONCILE_MS: z.coerce.number().int().nonnegative().default(15_000),
   LND_TLS_INSECURE: z.enum(["true", "false"]).default("false"),
+  LND_PAYER_REST_HOST: z.string().optional(),
+  LND_PAYER_TLS_CERT_PATH: z.string().optional(),
+  LND_PAYER_MACAROON_PATH: z.string().optional(),
 });
 
 export type AppEnv = z.infer<typeof EnvSchema>;
