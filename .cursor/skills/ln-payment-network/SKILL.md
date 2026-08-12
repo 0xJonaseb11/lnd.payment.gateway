@@ -54,4 +54,4 @@ Memory backend: `POST /v1/dev/pay/:id` simulates Lightning pay.
 
 ## Next
 
-Wire real LND behind `LightningPort`. Do not fork orchestration to do that.
+Run `./scripts/regtest-bootstrap.sh` when you want real LND pay. Keep orchestration on `PayerPort`. Do not pay from the receive node.

@@ -25,11 +25,13 @@ curl -s localhost:8787/v1/payments \
   -d '{"rail":"momo_rwf","amount_rwf":1350,"msisdn":"250788123456"}'
 ```
 
-With `LN_BACKEND=memory`, complete it:
+With a payer (memory, or `lnd-payer` after bootstrap):
 
 ```
 curl -s -X POST localhost:8787/v1/dev/pay/pay_...
 ```
+
+Two-node regtest: `./scripts/regtest-bootstrap.sh`
 
 ## Layout
 

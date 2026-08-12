@@ -16,7 +16,7 @@ LND/
 │   ├── momo-gateway/         # MomoPort (memory + HTTP)
 │   └── fx-rate/              # integer quotes
 ├── infra/docker/
-└── scripts/
+└── scripts/                  # regtest bootstrap (two LND nodes)
 ```
 
 Gateways are **libraries** composed by `network-api`. They are not separate HTTP processes in v1.
