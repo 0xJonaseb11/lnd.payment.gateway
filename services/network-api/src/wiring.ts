@@ -1,6 +1,14 @@
 import { loadEnv, type AppEnv } from "@ln/config";
 import { createLiveFx, createStaticFx } from "@ln/fx-rate";
-import { createLndRest, createMemoryLightning } from "@ln/ln-gateway";
+import {
+  createLndPayer,
+  createLndRest,
+  createMemoryLightning,
+  createMemoryPayer,
+  type LightningPort,
+  type MemoryLightning,
+  type PayerPort,
+} from "@ln/ln-gateway";
 import {
   createHttpMomo,
   createMemoryMomo,
@@ -30,7 +38,7 @@ function momoFromEnv(env: AppEnv): MomoPort {
   return createMemoryMomo(asRwf(env.MOMO_FLOAT_RWF));
 }
 
-function lnFromEnv(env: AppEnv) {
+function lnFromEnv(env: AppEnv): LightningPort {
   if (env.LN_BACKEND === "lnd_rest") {
     if (!env.LND_REST_HOST || !env.LND_TLS_CERT_PATH || !env.LND_MACAROON_PATH) {
       throw new AppError("LND_CONFIG", "lnd rest env is incomplete", 500);
@@ -45,6 +53,25 @@ function lnFromEnv(env: AppEnv) {
   return createMemoryLightning(asMsat(env.LN_INBOUND_MSAT));
 }
 
+function payerFromEnv(env: AppEnv, ln: LightningPort): PayerPort | undefined {
+  if (env.LN_BACKEND === "memory") {
+    return createMemoryPayer(ln as MemoryLightning);
+  }
+  if (
+    env.LND_PAYER_REST_HOST &&
+    env.LND_PAYER_TLS_CERT_PATH &&
+    env.LND_PAYER_MACAROON_PATH
+  ) {
+    return createLndPayer({
+      host: env.LND_PAYER_REST_HOST,
+      tlsCertPath: env.LND_PAYER_TLS_CERT_PATH,
+      macaroonPath: env.LND_PAYER_MACAROON_PATH,
+      tlsInsecure: env.LND_TLS_INSECURE === "true",
+    });
+  }
+  return undefined;
+}
+
 export function wireNetwork(env: AppEnv = loadEnv()): {
   network: NetworkService;
   allowDevPay: boolean;
@@ -54,6 +81,7 @@ export function wireNetwork(env: AppEnv = loadEnv()): {
     ? createFileStore(env.STORE_PATH)
     : createMemoryStore();
   const ln = lnFromEnv(env);
+  const payer = payerFromEnv(env, ln);
   const momo = momoFromEnv(env);
   const fxConfig = {
     feeBps: env.FEE_BPS,
@@ -72,8 +100,9 @@ export function wireNetwork(env: AppEnv = loadEnv()): {
       fx,
       now: () => new Date(),
       metrics: createMetrics(),
+      ...(payer ? { payer } : {}),
     }),
-    allowDevPay: env.LN_BACKEND === "memory",
+    allowDevPay: payer !== undefined,
     reconcileMs: env.RECONCILE_MS,
   };
 }

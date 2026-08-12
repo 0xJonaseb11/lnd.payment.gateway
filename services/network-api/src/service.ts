@@ -1,5 +1,5 @@
 import type { FxPort } from "@ln/fx-rate";
-import type { LightningPort } from "@ln/ln-gateway";
+import type { LightningPort, PayerPort } from "@ln/ln-gateway";
 import {
   MomoTransferStatus,
   type MomoPort,
@@ -57,6 +57,7 @@ type Deps = {
   fx: FxPort;
   now: () => Date;
   metrics?: Metrics;
+  payer?: PayerPort;
 };
 
 function requirePayment(store: PaymentStore, id: string): Payment {
@@ -253,7 +254,11 @@ export function createNetworkService(deps: Deps): NetworkService {
     },
     async payForTest(id) {
       const payment = requirePayment(deps.store, id);
-      await deps.ln.payForTest(payment.paymentHash);
+      if (deps.payer) {
+        await deps.payer.pay(payment.bolt11);
+      } else {
+        await deps.ln.payForTest(payment.paymentHash);
+      }
       return requirePayment(deps.store, id);
     },
     account(id) {
