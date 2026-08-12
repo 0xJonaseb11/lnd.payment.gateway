@@ -11,7 +11,7 @@
 
 - [x] `LightningPort` REST adapter (`createLndRest`)
 - [x] SubscribeInvoices → `onInvoiceAccepted`
-- [ ] Simnet pay from a second node (ops: run compose, open channel)
+- [x] Simnet pay from a second node (`lnd-payer` + `PayerPort`)
 
 ## Phase 2: MoMo sandbox
 

@@ -28,6 +28,7 @@ services:
       - "9735:9735"
     command:
       - --noseedbackup
+      - --alias=network
       - --bitcoin.active
       - --bitcoin.regtest
       - --bitcoin.node=bitcoind
@@ -40,6 +41,34 @@ services:
       - --restlisten=0.0.0.0:8080
       - --listen=0.0.0.0:9735
       - --tlsextradomain=lnd
+    networks:
+      - lnnet
+
+  lnd-payer:
+    image: lightninglabs/lnd:v0.18.5-beta
+    depends_on:
+      - bitcoind
+    volumes:
+      - ./data/lnd-payer:/root/.lnd
+    ports:
+      - "10010:10009"
+      - "8081:8080"
+      - "9736:9735"
+    command:
+      - --noseedbackup
+      - --alias=payer
+      - --bitcoin.active
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=bitcoind:18443
+      - --bitcoind.rpcuser=ln
+      - --bitcoind.rpcpass=ln
+      - --bitcoind.zmqpubrawblock=tcp://bitcoind:28332
+      - --bitcoind.zmqpubrawtx=tcp://bitcoind:28333
+      - --rpclisten=0.0.0.0:10009
+      - --restlisten=0.0.0.0:8080
+      - --listen=0.0.0.0:9735
+      - --tlsextradomain=lnd-payer
     networks:
       - lnnet
 
