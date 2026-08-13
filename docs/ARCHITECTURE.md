@@ -2,16 +2,17 @@
 
 ## Mission
 
-This repo is an **LND payment network**. Payments are denominated in **stable units (USDT micros)**. Lightning hold invoices are the crypto settlement rail (~1s accept). **MTN MoMo RWF** is the fiat offramp rail. NikoPay can sit on top of this network; it is not the only consumer.
+This repo is an **LND payment network**. Payments are denominated in **stable units (USDT micros)**. Lightning hold invoices are the crypto settlement rail (~1s accept). **MTN MoMo RWF** is the fiat offramp rail. Clients call `network-api`; this repo is not a NikoPay app.
 
 ## What ships in v1
 
 | Piece | Role |
 |-------|------|
 | `network-api` | HTTP + orchestration |
-| `ln-gateway` | Hold invoice port (in-process LND simulator; real LND later) |
+| `ln-gateway` | Hold invoice port (memory + LND REST) |
 | `momo-gateway` | Disbursements port (memory + HTTP sandbox) |
 | `fx-rate` | Integer USDT / BTC / RWF quotes |
+| store | Payments + ledger in Supabase Postgres (`PaymentStore`) |
 | `packages/shared` | Money, status machine, ids, errors |
 
 Two rails:
@@ -35,6 +36,7 @@ Wallet ──pays BOLT11──► ln-gateway (LND hold invoice)
 network-api ◄──quote/status┤
     │                      │ accept → settle / cancel
     ├── fx-rate (USDT↔BTC↔RWF)
+    ├── store (Supabase Postgres)
     ├── ledger (USDT micros)
     └── momo-gateway ──► MTN MoMo Disbursement (RWF)
 ```
@@ -65,7 +67,7 @@ INVOICE_ISSUED → EXPIRED
 | `POST /v1/payments` | Create hold invoice (momo or ledger) |
 | `GET /v1/payments/{id}` | Status |
 | `GET /v1/accounts/{id}` | Ledger balance |
-| `POST /v1/dev/pay/{id}` | Memory-backend test pay only |
+| `POST /v1/dev/pay/{id}` | Test pay (memory payer or `lnd-payer`) |
 
 ## Latency
 
