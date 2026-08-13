@@ -21,6 +21,7 @@ description: >-
 services/network-api|ln-gateway|momo-gateway|fx-rate
 packages/shared|config
 infra/docker
+supabase
 docs/
 .cursor/skills/
 ```
@@ -30,8 +31,8 @@ docs/
 | Concern | Choice |
 |---------|--------|
 | Language | TypeScript (Node 20+) |
-| DB | Postgres |
-| LN | LND gRPC via `ln-gateway` |
+| DB | Supabase Postgres (`network` schema) |
+| LN | LND via `ln-gateway` |
 | MoMo | Disbursements API via `momo-gateway` |
 | Atomicity | Hold invoices |
 
@@ -39,7 +40,7 @@ docs/
 
 - Full bar: [docs/CODING_STANDARDS.md](../../../docs/CODING_STANDARDS.md) + `.cursor/rules/*`
 - **No comments** in TS/app code; **NatSpec only** on Solidity
-- No em dashes or AI-sounding copy; sentence case; follow NikoPay UI theme only
+- No em dashes or AI-sounding copy; sentence case
 - Money: integer `msat`, integer RWF (agree in `packages/shared` and stick to it)
 - IDs: opaque `payment_id`; MoMo reference derived deterministically
 - Errors: typed codes; never leak macaroons/MSISDN in client errors
@@ -50,7 +51,7 @@ docs/
 ## Scaffolding order
 
 ```
-shared + ports → network-api (done) → real LND adapter → MoMo sandbox HTTP → Postgres
+shared + ports → network-api (done) → real LND adapter → MoMo sandbox HTTP → Supabase store
 ```
 
 ## Anti-patterns

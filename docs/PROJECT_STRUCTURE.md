@@ -16,6 +16,7 @@ LND/
 │   ├── momo-gateway/         # MomoPort (memory + HTTP)
 │   └── fx-rate/              # integer quotes
 ├── infra/docker/
+├── supabase/                 # Postgres schema (network.payments, ledger)
 └── scripts/                  # regtest bootstrap (two LND nodes)
 ```
 
@@ -36,10 +37,11 @@ Gateways are **libraries** composed by `network-api`. They are not separate HTTP
 |-------|--------|
 | Language | TypeScript (Node 20+) |
 | HTTP | Hono, bind `0.0.0.0:$PORT` |
-| LN | `LightningPort` (memory now, LND REST/gRPC next) |
+| LN | `LightningPort` (memory + LND REST) |
+| Store | Supabase Postgres (`STORE_BACKEND=supabase`) |
 | MoMo | Disbursements API |
 | Tests | Vitest, mocked ports |
 
 ## Env
 
-See `.env.example`. Never commit macaroons, TLS keys, or MoMo secrets.
+See `.env.example`. Never commit macaroons, TLS keys, MoMo secrets, or `DATABASE_URL`. Apply `supabase/migrations` with `supabase db push` (or the SQL editor), then set `STORE_BACKEND=supabase` and `DATABASE_URL` to the pooler URI (port 6543, `prepare` is off). Memory store remains the test default.

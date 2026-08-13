@@ -90,6 +90,7 @@ Wallet ──pays BOLT11──► ln-gateway (LND)
 network-api ◄──quote/status┤
     │                      │ hold accept → settle/cancel
     ├── fx-rate (USDT↔BTC↔RWF)
+    ├── store (Supabase Postgres)
     ├── ledger (USDT micros)
     └── momo-gateway ──► MTN MoMo (RWF)
 ```
