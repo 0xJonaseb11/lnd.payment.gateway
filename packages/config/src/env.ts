@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { z } from "zod";
 
 const BigIntish = z
@@ -23,7 +25,9 @@ const EnvSchema = z.object({
   MOMO_API_USER: z.string().optional(),
   MOMO_API_KEY: z.string().optional(),
   MOMO_TARGET_ENV: z.string().default("sandbox"),
+  STORE_BACKEND: z.enum(["memory", "file", "supabase"]).default("memory"),
   STORE_PATH: z.string().default(""),
+  DATABASE_URL: z.string().default(""),
   FX_LIVE: z.enum(["true", "false"]).default("false"),
   RECONCILE_MS: z.coerce.number().int().nonnegative().default(15_000),
   LND_TLS_INSECURE: z.enum(["true", "false"]).default("false"),
@@ -34,6 +38,17 @@ const EnvSchema = z.object({
 
 export type AppEnv = z.infer<typeof EnvSchema>;
 
+function loadDotEnv(): void {
+  const path = resolve(process.cwd(), ".env");
+  if (!existsSync(path)) {
+    return;
+  }
+  process.loadEnvFile(path);
+}
+
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
+  if (source === process.env) {
+    loadDotEnv();
+  }
   return EnvSchema.parse(source);
 }
