@@ -69,12 +69,14 @@ export function createHttpApp(
     return c.json(toPaymentResponse(payment), 201);
   });
 
-  app.get("/v1/payments/:id", (c) => {
-    const payment = network.get(c.req.param("id"));
+  app.get("/v1/payments/:id", async (c) => {
+    const payment = await network.get(c.req.param("id"));
     return c.json(toPaymentResponse(payment));
   });
 
-  app.get("/v1/accounts/:id", (c) => c.json(network.account(c.req.param("id"))));
+  app.get("/v1/accounts/:id", async (c) =>
+    c.json(await network.account(c.req.param("id"))),
+  );
 
   app.get("/metrics", (c) => c.json(network.metrics()));
 
