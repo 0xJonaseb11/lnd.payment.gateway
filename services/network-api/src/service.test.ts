@@ -216,4 +216,33 @@ describe("network service", () => {
     const done = await network.payForTest(created.id);
     expect(done.status).toBe(PaymentStatus.COMPLETE);
   });
+
+  it("pays through the payer port by bolt11", async () => {
+    const store = createMemoryStore();
+    const ln = createMemoryLightning(asMsat(50_000_000_000n));
+    const momo = createMemoryMomo(asRwf(10_000_000n));
+    const fx = createStaticFx({
+      feeBps: 150n,
+      rwfPerUsdt: 1350n,
+      usdtPerBtc: 95_000n,
+      ttlSeconds: 120,
+      now: () => new Date("2026-08-11T08:00:00Z"),
+    });
+    const network = createNetworkService({
+      store,
+      ln,
+      momo,
+      fx,
+      now: () => new Date("2026-08-11T08:00:00Z"),
+      payer: createMemoryPayer(ln),
+    });
+    const created = await network.create({
+      rail: Rail.momo_rwf,
+      amountRwf: asRwf(1350n),
+      msisdn: "250788123456",
+      provider: "mtn_momo",
+    });
+    const done = await network.payForTest(created.id);
+    expect(done.status).toBe(PaymentStatus.COMPLETE);
+  });
 });
