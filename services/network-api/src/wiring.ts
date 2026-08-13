@@ -18,7 +18,8 @@ import { AppError, asMsat, asRwf } from "@ln/shared";
 import { createFileStore } from "./file-store.ts";
 import { createMetrics } from "./metrics.ts";
 import { createNetworkService, type NetworkService } from "./service.ts";
-import { createMemoryStore } from "./store.ts";
+import { createMemoryStore, type PaymentStore } from "./store.ts";
+import { createSupabaseStore } from "./supabase-store.ts";
 
 function momoFromEnv(env: AppEnv): MomoPort {
   if (
@@ -72,14 +73,28 @@ function payerFromEnv(env: AppEnv, ln: LightningPort): PayerPort | undefined {
   return undefined;
 }
 
+function storeFromEnv(env: AppEnv): PaymentStore {
+  if (env.STORE_BACKEND === "supabase") {
+    if (!env.DATABASE_URL) {
+      throw new AppError("STORE_CONFIG", "DATABASE_URL is required for supabase", 500);
+    }
+    return createSupabaseStore(env.DATABASE_URL);
+  }
+  if (env.STORE_BACKEND === "file" || env.STORE_PATH) {
+    if (!env.STORE_PATH) {
+      throw new AppError("STORE_CONFIG", "STORE_PATH is required for file store", 500);
+    }
+    return createFileStore(env.STORE_PATH);
+  }
+  return createMemoryStore();
+}
+
 export function wireNetwork(env: AppEnv = loadEnv()): {
   network: NetworkService;
   allowDevPay: boolean;
   reconcileMs: number;
 } {
-  const store = env.STORE_PATH
-    ? createFileStore(env.STORE_PATH)
-    : createMemoryStore();
+  const store = storeFromEnv(env);
   const ln = lnFromEnv(env);
   const payer = payerFromEnv(env, ln);
   const momo = momoFromEnv(env);
