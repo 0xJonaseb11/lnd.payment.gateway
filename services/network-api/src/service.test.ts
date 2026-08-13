@@ -153,7 +153,7 @@ describe("network service", () => {
     });
     const done = await network.payForTest(created.id);
     expect(done.status).toBe(PaymentStatus.COMPLETE);
-    expect(network.account("acc_demo").usdt_micros).toBe("2000000");
+    expect((await network.account("acc_demo")).usdt_micros).toBe("2000000");
   });
 
   it("completes momo via webhook after pending", async () => {
@@ -185,7 +185,7 @@ describe("network service", () => {
     await network.payForTest(created.id);
     momo.setStatus(momoReferenceId(created.id), MomoTransferStatus.FAILED);
     await network.reconcile();
-    expect(network.get(created.id).status).toBe(PaymentStatus.REFUNDED);
+    expect((await network.get(created.id)).status).toBe(PaymentStatus.REFUNDED);
   });
 
   it("pays through the payer port by bolt11", async () => {

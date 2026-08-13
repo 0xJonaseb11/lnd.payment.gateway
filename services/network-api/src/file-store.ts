@@ -65,10 +65,10 @@ export function createFileStore(path: string): PaymentStore {
     const raw = readFileSync(path, "utf8");
     const snap = JSON.parse(raw) as Snapshot;
     for (const row of snap.payments ?? []) {
-      inner.insert(deserialize(row));
+      void inner.insert(deserialize(row));
     }
     for (const acc of snap.accounts ?? []) {
-      inner.credit(acc.id, asUsdtMicros(BigInt(acc.usdt_micros)));
+      void inner.credit(acc.id, asUsdtMicros(BigInt(acc.usdt_micros)));
     }
   } catch {
     mkdirSync(dirname(path), { recursive: true });
@@ -76,16 +76,10 @@ export function createFileStore(path: string): PaymentStore {
 
   const persist = () => {
     mkdirSync(dirname(path), { recursive: true });
-    const accounts = new Map<string, LedgerAccount>();
-    const payments = inner.list();
-    for (const payment of payments) {
-      if (payment.accountId) {
-        accounts.set(payment.accountId, inner.getAccount(payment.accountId));
-      }
-    }
+    const { payments, accounts } = inner.snapshot();
     const snap: Snapshot = {
       payments: payments.map(serialize),
-      accounts: [...accounts.values()].map((row) => ({
+      accounts: accounts.map((row: LedgerAccount) => ({
         id: row.id,
         usdt_micros: row.usdtMicros.toString(),
       })),
@@ -94,21 +88,22 @@ export function createFileStore(path: string): PaymentStore {
   };
 
   return {
-    insert(payment) {
-      inner.insert(payment);
+    async insert(payment) {
+      await inner.insert(payment);
       persist();
     },
     get: (id) => inner.get(id),
     byPaymentHash: (hash) => inner.byPaymentHash(hash),
-    list: () => inner.list(),
-    transition(id, from, to, patch) {
-      const next = inner.transition(id, from, to, patch);
+    byMomoReference: (referenceId) => inner.byMomoReference(referenceId),
+    listReconcilable: () => inner.listReconcilable(),
+    async transition(id, from, to, patch) {
+      const next = await inner.transition(id, from, to, patch);
       persist();
       return next;
     },
     getAccount: (id) => inner.getAccount(id),
-    credit(accountId, micros) {
-      const next = inner.credit(accountId, micros);
+    async credit(accountId, micros) {
+      const next = await inner.credit(accountId, micros);
       persist();
       return next;
     },

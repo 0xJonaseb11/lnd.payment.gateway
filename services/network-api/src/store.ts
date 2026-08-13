@@ -2,55 +2,78 @@ import {
   AppError,
   assertTransition,
   asUsdtMicros,
+  momoReferenceId,
+  PaymentStatus,
+  Rail,
   type LedgerAccount,
   type Payment,
-  type PaymentStatus,
   type UsdtMicros,
 } from "@ln/shared";
 
+const RECONCILE_STATUSES: ReadonlySet<string> = new Set([
+  PaymentStatus.DISBURSING,
+  PaymentStatus.MANUAL_REVIEW,
+]);
+
 export type PaymentStore = {
-  insert(payment: Payment): void;
-  get(id: string): Payment | undefined;
-  byPaymentHash(hash: string): Payment | undefined;
-  list(): Payment[];
+  insert(payment: Payment): Promise<void>;
+  get(id: string): Promise<Payment | undefined>;
+  byPaymentHash(hash: string): Promise<Payment | undefined>;
+  byMomoReference(referenceId: string): Promise<Payment | undefined>;
+  listReconcilable(): Promise<Payment[]>;
   transition(
     id: string,
-    from: PaymentStatus,
-    to: PaymentStatus,
+    from: Payment["status"],
+    to: Payment["status"],
     patch?: Partial<Payment>,
-  ): Payment;
-  getAccount(id: string): LedgerAccount;
-  credit(accountId: string, micros: UsdtMicros): LedgerAccount;
+  ): Promise<Payment>;
+  getAccount(id: string): Promise<LedgerAccount>;
+  credit(accountId: string, micros: UsdtMicros): Promise<LedgerAccount>;
 };
 
-export function createMemoryStore(): PaymentStore {
+export type MemoryStore = PaymentStore & {
+  snapshot(): { payments: Payment[]; accounts: LedgerAccount[] };
+};
+
+export function createMemoryStore(): MemoryStore {
   const payments = new Map<string, Payment>();
   const byHash = new Map<string, string>();
+  const byMomoRef = new Map<string, string>();
   const accounts = new Map<string, LedgerAccount>();
 
   return {
-    insert(payment) {
+    async insert(payment) {
       if (payments.has(payment.id)) {
         throw new AppError("PAYMENT_EXISTS", "payment id already used", 409);
       }
       payments.set(payment.id, payment);
       byHash.set(payment.paymentHash, payment.id);
+      if (payment.rail === Rail.momo_rwf) {
+        byMomoRef.set(momoReferenceId(payment.id), payment.id);
+      }
     },
 
-    get(id) {
+    async get(id) {
       return payments.get(id);
     },
 
-    byPaymentHash(hash) {
+    async byPaymentHash(hash) {
       const id = byHash.get(hash);
       return id ? payments.get(id) : undefined;
     },
 
-    list() {
-      return [...payments.values()];
+    async byMomoReference(referenceId) {
+      const id = byMomoRef.get(referenceId);
+      return id ? payments.get(id) : undefined;
     },
 
-    transition(id, from, to, patch) {
+    async listReconcilable() {
+      return [...payments.values()].filter((row) =>
+        RECONCILE_STATUSES.has(row.status),
+      );
+    },
+
+    async transition(id, from, to, patch) {
       const current = payments.get(id);
       if (!current) {
         throw new AppError("PAYMENT_NOT_FOUND", "unknown payment", 404);
@@ -68,18 +91,25 @@ export function createMemoryStore(): PaymentStore {
       return next;
     },
 
-    getAccount(id) {
+    async getAccount(id) {
       return accounts.get(id) ?? { id, usdtMicros: asUsdtMicros(0n) };
     },
 
-    credit(accountId, micros) {
-      const current = this.getAccount(accountId);
+    async credit(accountId, micros) {
+      const current = await this.getAccount(accountId);
       const next = {
         id: accountId,
         usdtMicros: asUsdtMicros(current.usdtMicros + micros),
       };
       accounts.set(accountId, next);
       return next;
+    },
+
+    snapshot() {
+      return {
+        payments: [...payments.values()],
+        accounts: [...accounts.values()],
+      };
     },
   };
 }
