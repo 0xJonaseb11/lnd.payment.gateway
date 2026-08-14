@@ -1,11 +1,12 @@
 import { loadEnv } from "@ln/config";
 import { describe, expect, it } from "vitest";
+import { parseApiKeys } from "./auth.ts";
 import { createHttpApp } from "./http.ts";
 import { wireNetwork } from "./wiring.ts";
 
-function app() {
+function app(apiKeys = parseApiKeys("")) {
   const { network, allowDevPay } = wireNetwork(loadEnv({}));
-  return createHttpApp(network, { allowDevPay });
+  return createHttpApp(network, { allowDevPay, apiKeys });
 }
 
 describe("http", () => {
@@ -45,5 +46,36 @@ describe("http", () => {
       }),
     });
     expect(res.status).toBe(400);
+  });
+
+  it("rejects payments without an api key when keys are set", async () => {
+    const api = app(parseApiKeys("net_test_key"));
+    const res = await api.request("/v1/payments", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        rail: "momo_rwf",
+        amount_rwf: 1350,
+        msisdn: "250788123456",
+      }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("accepts a bearer api key", async () => {
+    const api = app(parseApiKeys("net_test_key"));
+    const res = await api.request("/v1/payments", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: "Bearer net_test_key",
+      },
+      body: JSON.stringify({
+        rail: "momo_rwf",
+        amount_rwf: 1350,
+        msisdn: "250788123456",
+      }),
+    });
+    expect(res.status).toBe(201);
   });
 });

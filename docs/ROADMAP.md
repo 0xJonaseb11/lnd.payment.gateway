@@ -37,6 +37,3 @@
 
 - [ ] USDT (or other) on LN via `tapd`
 - [ ] Keep MoMo offramp; swap FX at the edge if needed
-
-
-pay_8281d90e-0672-4fd9-a39a-3c6cdfdc44ef
