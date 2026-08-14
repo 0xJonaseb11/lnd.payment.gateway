@@ -33,7 +33,7 @@ NikoPay is a client of this network.
 | `services/ln-gateway` | `LightningPort` |
 | `services/momo-gateway` | `MomoPort` |
 | `services/fx-rate` | Integer quotes |
-| `services/network-api` | Orchestration + Hono |
+| `services/network-api` | Orchestration + Hono + `PaymentStore` |
 
 ## Rules
 
@@ -42,6 +42,7 @@ NikoPay is a client of this network.
 3. Conditional status updates. Duplicate accept is a no-op.
 4. No comments in TS. No floats for money.
 5. Do not call MoMo from `ln-gateway`.
+6. Persistence is Supabase Postgres. Do not orchestrate LN or MoMo in Edge Functions.
 
 ## Run
 
@@ -54,4 +55,4 @@ Memory backend: `POST /v1/dev/pay/:id` simulates Lightning pay.
 
 ## Next
 
-Run `./scripts/regtest-bootstrap.sh` when you want real LND pay. Keep orchestration on `PayerPort`. Do not pay from the receive node.
+Apply `supabase/migrations` and set `STORE_BACKEND=supabase` plus `DATABASE_URL`. Keep orchestration in `network-api`. Run `./scripts/regtest-bootstrap.sh` when you want real LND pay.

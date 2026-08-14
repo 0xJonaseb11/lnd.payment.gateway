@@ -41,12 +41,12 @@ export type CreatePaymentInput = CreateMomoInput | CreateLedgerInput;
 
 export type NetworkService = {
   create(input: CreatePaymentInput): Promise<Payment>;
-  get(id: string): Payment;
+  get(id: string): Promise<Payment>;
   onInvoiceAccepted(paymentHashHex: string): Promise<void>;
   onMomoCallback(referenceId: string): Promise<Payment>;
   reconcile(): Promise<void>;
   payForTest(id: string): Promise<Payment>;
-  account(id: string): { id: string; usdt_micros: string };
+  account(id: string): Promise<{ id: string; usdt_micros: string }>;
   metrics(): Record<string, number>;
 };
 
@@ -60,8 +60,8 @@ type Deps = {
   payer?: PayerPort;
 };
 
-function requirePayment(store: PaymentStore, id: string): Payment {
-  const found = store.get(id);
+async function requirePayment(store: PaymentStore, id: string): Promise<Payment> {
+  const found = await store.get(id);
   if (!found) {
     throw new AppError("PAYMENT_NOT_FOUND", "unknown payment", 404);
   }
@@ -121,7 +121,7 @@ export function createNetworkService(deps: Deps): NetworkService {
     };
 
     try {
-      deps.store.insert(payment);
+      await deps.store.insert(payment);
     } catch (err) {
       await deps.ln.cancel(hold.paymentHash);
       throw err;
@@ -134,9 +134,9 @@ export function createNetworkService(deps: Deps): NetworkService {
     if (!payment.accountId) {
       throw new AppError("MISSING_ACCOUNT", "ledger rail requires account_id", 500);
     }
-    deps.store.credit(payment.accountId, payment.amountUsdtMicros);
+    await deps.store.credit(payment.accountId, payment.amountUsdtMicros);
     await deps.ln.settle(payment.preimage);
-    deps.store.transition(
+    await deps.store.transition(
       payment.id,
       PaymentStatus.LN_ACCEPTED,
       PaymentStatus.COMPLETE,
@@ -154,20 +154,20 @@ export function createNetworkService(deps: Deps): NetworkService {
     }
     if (status === MomoTransferStatus.SUCCESSFUL) {
       await deps.ln.settle(payment.preimage);
-      deps.store.transition(payment.id, from, PaymentStatus.COMPLETE);
+      await deps.store.transition(payment.id, from, PaymentStatus.COMPLETE);
       metrics.inc("momo_ok");
       metrics.inc("complete");
       return;
     }
     if (status === MomoTransferStatus.FAILED) {
       await deps.ln.cancel(payment.paymentHash);
-      deps.store.transition(payment.id, from, PaymentStatus.REFUNDED);
+      await deps.store.transition(payment.id, from, PaymentStatus.REFUNDED);
       metrics.inc("momo_fail");
       metrics.inc("refunded");
       return;
     }
     if (from === PaymentStatus.DISBURSING) {
-      deps.store.transition(payment.id, from, PaymentStatus.MANUAL_REVIEW);
+      await deps.store.transition(payment.id, from, PaymentStatus.MANUAL_REVIEW);
       metrics.inc("manual_review");
     }
   }
@@ -176,7 +176,7 @@ export function createNetworkService(deps: Deps): NetworkService {
     if (!payment.destination || payment.amountRwf === null) {
       throw new AppError("MISSING_DESTINATION", "momo rail requires destination", 500);
     }
-    deps.store.transition(
+    await deps.store.transition(
       payment.id,
       PaymentStatus.LN_ACCEPTED,
       PaymentStatus.DISBURSING,
@@ -187,11 +187,11 @@ export function createNetworkService(deps: Deps): NetworkService {
       amountRwf: payment.amountRwf,
       msisdn: payment.destination.msisdn,
     });
-    await applyMomoStatus(requirePayment(deps.store, payment.id), result.status);
+    await applyMomoStatus(await requirePayment(deps.store, payment.id), result.status);
   }
 
   async function onInvoiceAccepted(paymentHashHex: string): Promise<void> {
-    const payment = deps.store.byPaymentHash(paymentHashHex);
+    const payment = await deps.store.byPaymentHash(paymentHashHex);
     if (!payment) {
       log("warn", "accepted hash with no payment", { hash: paymentHashHex.slice(0, 8) });
       return;
@@ -200,7 +200,7 @@ export function createNetworkService(deps: Deps): NetworkService {
       return;
     }
     if (deps.now() > payment.expiresAt) {
-      deps.store.transition(
+      await deps.store.transition(
         payment.id,
         PaymentStatus.INVOICE_ISSUED,
         PaymentStatus.EXPIRED,
@@ -209,13 +209,13 @@ export function createNetworkService(deps: Deps): NetworkService {
       return;
     }
 
-    deps.store.transition(
+    await deps.store.transition(
       payment.id,
       PaymentStatus.INVOICE_ISSUED,
       PaymentStatus.LN_ACCEPTED,
     );
     metrics.inc("ln_accepted");
-    const accepted = requirePayment(deps.store, payment.id);
+    const accepted = await requirePayment(deps.store, payment.id);
     if (accepted.rail === Rail.ledger) {
       await fulfillLedger(accepted);
       return;
@@ -230,9 +230,7 @@ export function createNetworkService(deps: Deps): NetworkService {
     },
     onInvoiceAccepted,
     async onMomoCallback(referenceId) {
-      const payment = deps.store
-        .list()
-        .find((row) => momoReferenceId(row.id) === referenceId);
+      const payment = await deps.store.byMomoReference(referenceId);
       if (!payment) {
         throw new AppError("PAYMENT_NOT_FOUND", "unknown momo reference", 404);
       }
@@ -241,19 +239,13 @@ export function createNetworkService(deps: Deps): NetworkService {
       return requirePayment(deps.store, payment.id);
     },
     async reconcile() {
-      for (const row of deps.store.list()) {
-        if (
-          row.status !== PaymentStatus.DISBURSING &&
-          row.status !== PaymentStatus.MANUAL_REVIEW
-        ) {
-          continue;
-        }
+      for (const row of await deps.store.listReconcilable()) {
         const result = await deps.momo.getStatus(momoReferenceId(row.id));
         await applyMomoStatus(row, result.status);
       }
     },
     async payForTest(id) {
-      const payment = requirePayment(deps.store, id);
+      const payment = await requirePayment(deps.store, id);
       if (deps.payer) {
         await deps.payer.pay(payment.bolt11);
       } else {
@@ -261,8 +253,8 @@ export function createNetworkService(deps: Deps): NetworkService {
       }
       return requirePayment(deps.store, id);
     },
-    account(id) {
-      const row = deps.store.getAccount(id);
+    async account(id) {
+      const row = await deps.store.getAccount(id);
       return { id: row.id, usdt_micros: row.usdtMicros.toString() };
     },
     metrics() {

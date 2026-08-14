@@ -41,4 +41,7 @@ services/ln-gateway LightningPort
 services/momo-gateway MoMo disbursement
 services/fx-rate    integer quotes
 services/network-api HTTP + orchestration
+supabase/           payments + ledger schema
 ```
+
+Supabase is the payment store. Set `STORE_BACKEND=supabase` and `DATABASE_URL` after applying `supabase/migrations`. Tests keep the memory store.

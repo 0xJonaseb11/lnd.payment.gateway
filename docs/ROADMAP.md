@@ -21,15 +21,15 @@
 
 ## Phase 3: Persistence and ops
 
-- [x] File store (`STORE_PATH`)
+- [x] File store (`STORE_PATH`, local fallback)
+- [x] Supabase store (`STORE_BACKEND=supabase`, `DATABASE_URL`)
 - [x] Live BTC-USD feed (`FX_LIVE=true`)
 - [x] Reconciliation job
 - [x] `/metrics` counters
-- [ ] Postgres when volume needs it
 
-## Phase 4: Product
+## Phase 4: Network clients
 
-- [ ] NikoPay UI as a client of `/v1/payments`
+- [ ] Authenticated access to `/v1/payments` for external clients
 - [x] Airtel destination type behind the same MoMo port
 - [x] Status payload separates rail, provider, and amount_rwf
 
