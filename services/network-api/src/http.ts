@@ -81,9 +81,9 @@ export function createHttpApp(
     c.json(await network.account(c.req.param("id"))),
   );
 
-  app.get("/metrics", (c) => c.json(network.metrics()));
+  app.get("/metrics", gated, (c) => c.json(network.metrics()));
 
-  app.post("/v1/webhooks/momo", async (c) => {
+  app.post("/v1/webhooks/momo", webhook, async (c) => {
     const body = (await c.req.json()) as {
       referenceId?: string;
       externalId?: string;
