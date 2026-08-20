@@ -59,4 +59,4 @@ lncli decodepayreq <bolt11>
 
 ## Units reminder
 
-APIs mix sat and msat: normalize to **msat integers** in NikoPay code.
+APIs mix sat and msat: normalize to **msat integers** in this codebase.

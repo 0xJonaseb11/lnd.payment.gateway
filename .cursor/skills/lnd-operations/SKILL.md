@@ -1,9 +1,10 @@
 ---
 name: lnd-operations
 description: >-
-  Install, configure, and operate LND for NikoPay: chain backends, wallets,
-  macaroons, channels, invoices, gRPC, simnet/testnet. Use when setting up LND,
-  Docker lightning stacks, lncli, hold invoices, or ln-gateway integration.
+  Install, configure, and operate LND for this payment network: chain backends,
+  wallets, macaroons, channels, invoices, gRPC, simnet/testnet. Use when setting
+  up LND, Docker lightning stacks, lncli, hold invoices, or ln-gateway
+  integration.
 ---
 
 # LND operations

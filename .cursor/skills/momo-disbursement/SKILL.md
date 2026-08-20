@@ -1,14 +1,14 @@
 ---
 name: momo-disbursement
 description: >-
-  MTN MoMo Disbursements API for Rwanda RWF payouts in NikoPay: sandbox setup,
-  OAuth, transfer, status polling, idempotency, MSISDN formats. Use when
-  implementing momo-gateway, RWF payouts, MoMo webhooks, or float checks.
+  MTN MoMo Disbursements API for Rwanda RWF payouts: sandbox setup, OAuth,
+  transfer, status polling, idempotency, MSISDN formats. Use when implementing
+  momo-gateway, RWF payouts, MoMo webhooks, or float checks.
 ---
 
 # MoMo disbursement (RWF)
 
-## Role in NikoPay
+## Role in this network
 
 After Lightning **ACCEPTED**, `momo-gateway` sends **RWF** to the recipient’s MTN Mobile Money wallet. Collections API is not the offramp path (that would pull from customer). **Disbursements** = B2C payout.
 
@@ -49,8 +49,8 @@ Body:
   currency: "RWF"                 # sandbox may use currency quirks: verify against portal
   externalId: "{payment_id}"
   payee: { partyIdType: "MSISDN", partyId: "2507..." }
-  payerMessage: "NikoPay"
-  payeeNote: "NikoPay offramp"
+  payerMessage: "LN network"
+  payeeNote: "LN offramp"
 ```
 
 Then:

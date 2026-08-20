@@ -18,7 +18,7 @@ alwaysApply: true
 - Plain, specific, product-true. Say what the screen does.
 - Sentence case for headings and buttons ("Send to Mobile Money", not "Send To Mobile Money").
 - Prefer "Bitcoin received" / "RWF delivered" over vague "Success!" / "All set!".
-- Match NikoPay tone on [nikopay.rw](https://www.nikopay.rw/): direct, Rwanda-first, fee-transparent. Do not invent a new brand voice.
+- Direct, Rwanda-first, fee-transparent. Do not invent a brand voice.
 
 ## Examples
 
