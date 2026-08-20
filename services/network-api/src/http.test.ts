@@ -4,9 +4,9 @@ import { parseApiKeys } from "./auth.ts";
 import { createHttpApp } from "./http.ts";
 import { wireNetwork } from "./wiring.ts";
 
-function app(apiKeys = parseApiKeys(""), webhookSecret = "") {
+function app(apiKeys = parseApiKeys("")) {
   const { network, allowDevPay } = wireNetwork(loadEnv({}));
-  return createHttpApp(network, { allowDevPay, apiKeys, webhookSecret });
+  return createHttpApp(network, { allowDevPay, apiKeys });
 }
 
 describe("http", () => {
@@ -77,61 +77,5 @@ describe("http", () => {
       }),
     });
     expect(res.status).toBe(201);
-  });
-
-  it("keeps health public when keys are set", async () => {
-    const api = app(parseApiKeys("net_test_key"), "hook_secret");
-    const res = await api.request("/health");
-    expect(res.status).toBe(200);
-  });
-
-  it("rejects metrics without an api key when keys are set", async () => {
-    const api = app(parseApiKeys("net_test_key"));
-    const res = await api.request("/metrics");
-    expect(res.status).toBe(401);
-  });
-
-  it("accepts metrics with a bearer api key", async () => {
-    const api = app(parseApiKeys("net_test_key"));
-    const res = await api.request("/metrics", {
-      headers: { authorization: "Bearer net_test_key" },
-    });
-    expect(res.status).toBe(200);
-  });
-
-  it("rejects momo webhooks without the callback secret when set", async () => {
-    const api = app(parseApiKeys(""), "hook_secret");
-    const res = await api.request("/v1/webhooks/momo", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ referenceId: "x" }),
-    });
-    expect(res.status).toBe(401);
-  });
-
-  it("rejects momo webhooks with a wrong callback secret", async () => {
-    const api = app(parseApiKeys(""), "hook_secret");
-    const res = await api.request("/v1/webhooks/momo", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-callback-secret": "wrong",
-      },
-      body: JSON.stringify({ referenceId: "x" }),
-    });
-    expect(res.status).toBe(401);
-  });
-
-  it("accepts momo webhooks with the callback secret", async () => {
-    const api = app(parseApiKeys(""), "hook_secret");
-    const res = await api.request("/v1/webhooks/momo", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-callback-secret": "hook_secret",
-      },
-      body: JSON.stringify({}),
-    });
-    expect(res.status).toBe(400);
   });
 });

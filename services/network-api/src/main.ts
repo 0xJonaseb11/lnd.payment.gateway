@@ -10,7 +10,6 @@ const { network, allowDevPay, reconcileMs } = wireNetwork(env);
 const app = createHttpApp(network, {
   allowDevPay,
   apiKeys: parseApiKeys(env.NETWORK_API_KEYS),
-  webhookSecret: env.MOMO_WEBHOOK_SECRET,
 });
 
 if (reconcileMs > 0) {
