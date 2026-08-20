@@ -6,7 +6,7 @@ alwaysApply: true
 # LN payment network: standing orders
 
 - Mission: **LND payment network** for stablecoin-denominated payments, ~1s LN finality, **MoMo RWF offramp**.
-- NikoPay is a client of this network, not the whole product.
+- This repo is network tooling. Clients call `/v1/payments`. It is not a wallet app.
 - Before coding: read `AGENTS.md`, then skills `ln-payment-network` and `lightning-rwf-offramp`.
 - Source of truth: `docs/ARCHITECTURE.md`, `docs/OFFRAMP_FLOW.md`, `docs/PROJECT_STRUCTURE.md`, `docs/ROADMAP.md`, `docs/CODING_STANDARDS.md`.
 - Default path: **LND hold invoices + MoMo Disbursements**. Not BitGo-first. Taproot Assets is later.

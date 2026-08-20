@@ -1,8 +1,8 @@
 ---
 name: lightning-fundamentals
 description: >-
-  Bitcoin Lightning Network concepts for NikoPay: payment channels, HTLCs,
-  multihop routing, invoices (BOLT11), revocation, and why LN enables ~1s
+  Bitcoin Lightning Network concepts for this payment network: payment channels,
+  HTLCs, multihop routing, invoices (BOLT11), revocation, and why LN enables ~1s
   finality. Use when explaining Lightning, designing channel/liquidity strategy,
   or before implementing LND or offramp logic.
 ---
@@ -13,7 +13,7 @@ description: >-
 
 Two parties lock coins in a **2-of-2 multisig funding tx** (channel). They update balances off-chain by exchanging signed **commitment transactions**. Old states are **revoked** (breach → punishment). Payments across the network use **HTLCs** (hash + timelock) so multihop routes are atomic: all hops succeed or all fail. Bitcoin is the court of last resort.
 
-## Why this matters for NikoPay
+## Why this matters here
 
 | On-chain BTC | Lightning |
 |--------------|-----------|
@@ -29,7 +29,7 @@ Two parties lock coins in a **2-of-2 multisig funding tx** (channel). They updat
 
 - Open = on-chain fund; Close = on-chain settle (cooperative or force)
 - Capacity is fixed until resized; **inbound** liquidity needed to *receive*
-- NikoPay as receiver needs inbound capacity from well-connected peers / LSP
+- The receive node needs inbound capacity from well-connected peers / LSP
 
 ### HTLCs
 
@@ -53,7 +53,7 @@ Two parties lock coins in a **2-of-2 multisig funding tx** (channel). They updat
 
 - Intermediary nodes are not trusted with custody of the payment (HTLC atomicity)
 - Counterparties can force-close; online watchtowers/monitoring matter for hot nodes
-- Offramp still trusts NikoPay for **honest MoMo disbursement** (hold invoices reduce *technical* failure loss, not malice with fake “delivered”)
+- Offramp still trusts the network operator for **honest MoMo disbursement** (hold invoices reduce *technical* failure loss, not malice with fake “delivered”)
 
 ## Deeper reading
 

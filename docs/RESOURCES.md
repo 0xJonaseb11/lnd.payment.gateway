@@ -1,12 +1,11 @@
 # Curated resources
 
-Authoritative links for NikoPay Lightning → RWF. Prefer these over random web summaries.
+Authoritative links for Lightning → RWF. Prefer these over random web summaries.
 
 ## Mission / product
 
 | Resource | Why |
 |----------|-----|
-| [nikopay.rw](https://www.nikopay.rw/) | Current product (USDT→MoMo UI); Lightning is planned rail |
 | [tando.me](https://tando.me/) | Competitor pattern: LN → mobile money (Kenya M-Pesa) |
 | [Pave protocol](https://github.com/GBKS/pave-protocol/blob/main/SPEC.md) | Open quote/discovery/hold-invoice pattern for LN→fiat rails |
 

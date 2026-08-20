@@ -26,7 +26,7 @@
 - Lightning often uses **millisatoshi** (msat): 1 sat = 1000 msat
 - Always store integer msat in DB; never floats
 
-## NikoPay mapping
+## Network mapping
 
 ```
 User LN payment  →  our LND inbound channel  →  accept/settle

@@ -2,7 +2,7 @@
 
 ## Products (portal)
 
-| Product | NikoPay use |
+| Product | This network |
 |---------|-------------|
 | Disbursements | **Primary**: pay out RWF |
 | Collections | Optional: customer deposits / other products |

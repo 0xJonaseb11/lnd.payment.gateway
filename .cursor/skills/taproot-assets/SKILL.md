@@ -2,7 +2,7 @@
 name: taproot-assets
 description: >-
   Taproot Assets (tapd) for multi-asset Bitcoin and Lightning: stablecoins on LN,
-  edge swaps, and future NikoPay USDT-on-Lightning path. Use when evaluating or
+  edge swaps, and a future USDT-on-Lightning path. Use when evaluating or
   implementing Taproot Assets, tapd, or asset-denominated Lightning invoices.
 ---
 
@@ -21,7 +21,7 @@ Docs:
 - https://docs.lightning.engineering/the-lightning-network/taproot-assets
 - https://docs.lightning.engineering/the-lightning-network/taproot-assets/taproot-assets-on-lightning.md
 
-## Why NikoPay might care later
+## Why this network might care later
 
 | Today | Future with Taproot Assets |
 |-------|----------------------------|
@@ -29,7 +29,7 @@ Docs:
 | Separate chain bridges | LN invoice UX unified with BTC rail |
 | On-chain TRON latency | LN-speed stablecoin leg |
 
-Atomic BTC↔asset forwards at edge nodes can let wallets pay in BTC while NikoPay receives a stable asset (or vice versa).
+Atomic BTC↔asset forwards at edge nodes can let wallets pay in BTC while the network receives a stable asset (or vice versa).
 
 ## Design constraints
 

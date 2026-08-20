@@ -3,7 +3,7 @@ name: ln-payment-network
 description: >-
   LND payment network that processes stablecoin-denominated payments, with
   hold invoices and MoMo RWF offramp. Use when building network-api, rails,
-  ledger credits, quotes, or anything beyond NikoPay-only scope.
+  ledger credits, quotes, or client integrations.
 ---
 
 # LN payment network
@@ -16,14 +16,14 @@ description: >-
 
 ## Product
 
-Not a NikoPay-only repo. This is a **payment network**:
+This is a **payment network**:
 
 - Unit of account: **USDT micros**
 - Settlement: **LND hold invoices** (memory port now, real LND next)
 - Offramp: **MoMo RWF** (`rail: momo_rwf`)
 - Internal credit: **ledger** (`rail: ledger`)
 
-NikoPay is a client of this network.
+Clients call `/v1/payments`.
 
 ## Code map
 

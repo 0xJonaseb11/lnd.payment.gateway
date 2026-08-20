@@ -1,9 +1,9 @@
 ---
 name: lightning-rwf-offramp
 description: >-
-  Implements NikoPay Lightning BTC to RWF Mobile Money offramp: quotes, hold
-  invoices, MoMo disbursement coupling, idempotency, and status machine. Use when
-  building network-api MoMo rail, end-to-end LN payout flows, or anything BTC/sats to RWF.
+  Implements Lightning BTC to RWF Mobile Money offramp: quotes, hold invoices,
+  MoMo disbursement coupling, idempotency, and status machine. Use when building
+  network-api MoMo rail, end-to-end LN payout flows, or anything BTC/sats to RWF.
 ---
 
 # Lightning → RWF offramp
@@ -12,7 +12,7 @@ description: >-
 
 1. [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md)
 2. [docs/OFFRAMP_FLOW.md](../../../docs/OFFRAMP_FLOW.md)
-3. Skills: `momo-disbursement`, `lnd-operations`, `nikopay-mission`
+3. Skills: `momo-disbursement`, `lnd-operations`, `network-mission`
 
 ## Canonical flow
 

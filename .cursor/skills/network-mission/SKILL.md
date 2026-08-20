@@ -1,19 +1,16 @@
 ---
-name: nikopay-mission
+name: network-mission
 description: >-
-  NikoPay product mission, Rwanda RWF offramp goals, competitor context (Tando),
-  and 1-second Lightning finality requirements. Use when starting any NikoPay,
-  Lightning offramp, MoMo, or LND work in this repo, or when clarifying product
-  scope versus USDT TRC20.
+  LN payment network mission: Rwanda RWF offramp goals, competitor context
+  (Tando), and 1-second Lightning finality. Use when starting Lightning offramp,
+  MoMo, or LND work in this repo, or when clarifying scope versus USDT TRC20.
 ---
 
-# NikoPay mission
+# Network mission
 
 ## What we are building
 
-**NikoPay** ([nikopay.rw](https://www.nikopay.rw/)) makes crypto spendable in Rwanda as **RWF on Mobile Money** (MTN MoMo first; Airtel later).
-
-Today’s live narrative is **USDT (TRC20) → MTN MoMo**. This repository is the **LND payment network** (stablecoin units, hold invoices) with **MoMo RWF** as the offramp. NikoPay is a client of that network.
+This repository is **LND payment network tooling**. It processes **stablecoin-denominated** payments (USDT micros) with hold invoices, and offramps to **RWF on MTN MoMo** (Airtel later). Clients call `/v1/payments`. It is infrastructure, not a retail wallet app.
 
 ## Why Lightning
 
@@ -35,7 +32,7 @@ Today’s live narrative is **USDT (TRC20) → MTN MoMo**. This repository is th
 
 - Bridge, not a retail exchange UI for trading
 - Sender keeps funds in their LN wallet until they pay the invoice
-- NikoPay operates **LN receive liquidity + RWF float** to complete the bridge
+- The network operator holds **LN receive liquidity + RWF float** to complete the bridge
 - Compliance/KYC is a **service** concern (Rwanda rails), not something wallets embed in BOLT11
 
 ## Competitor takeaways (Tando)
