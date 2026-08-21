@@ -2,7 +2,7 @@
 
 ## Mission
 
-This repo is an **LND payment network**. Payments are denominated in **stable units (USDT micros)**. Lightning hold invoices are the crypto settlement rail (~1s accept). **MTN MoMo RWF** is the fiat offramp rail. Clients call `network-api`; this repo is not a NikoPay app.
+This repo is an **LND payment network**. Payments are denominated in **stable units (USDT micros)**. Lightning hold invoices are the crypto settlement rail (~1s accept). **MTN MoMo RWF** is the fiat offramp rail. Clients call `network-api`. This is network tooling, not a wallet app.
 
 ## What ships in v1
 

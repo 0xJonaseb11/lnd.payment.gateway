@@ -1,5 +1,5 @@
 ---
-description: TypeScript patterns for NikoPay services: types, modules, async
+description: TypeScript patterns for network services: types, modules, async
 globs: "**/*.{ts,tsx}"
 alwaysApply: false
 ---

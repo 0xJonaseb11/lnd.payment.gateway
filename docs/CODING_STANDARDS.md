@@ -1,6 +1,6 @@
 # Coding standards
 
-Canonical quality bar for NikoPay Lightning. Rules in `.cursor/rules/` enforce this during edits; this doc is the human/agent reference.
+Canonical quality bar for the LN payment network. Rules in `.cursor/rules/` enforce this during edits; this doc is the human/agent reference.
 
 ## Principles
 
@@ -9,7 +9,7 @@ Canonical quality bar for NikoPay Lightning. Rules in `.cursor/rules/` enforce t
 3. Strict boundaries: gateways stay dumb; orchestration stays central.
 4. Safe money: integers only; idempotent mutations.
 5. Fast critical path: LN accept to enqueue disburse with minimal work on the subscription thread.
-6. Human voice and real product UI: no AI-sounding copy; follow NikoPay theme only.
+6. Human voice and real product UI: no AI-sounding copy; do not invent a theme.
 
 ## Comments policy
 
@@ -26,7 +26,7 @@ Canonical quality bar for NikoPay Lightning. Rules in `.cursor/rules/` enforce t
 | Em dashes | Never (`—`). Use commas, periods, colons, or parentheses. |
 | Capitalization | Sentence case. No Title Case Labels. |
 | Copy | Plain, specific. No AI filler words or hype stacks. |
-| Theme | Reuse NikoPay tokens/components. Do not invent a palette or "AI SaaS" look. |
+| Theme | Reuse existing tokens if a UI exists. Do not invent a palette or "AI SaaS" look. |
 | Layout | No purple glows, pill-chip hero clutter, or decorative card grids. |
 
 Details: `.cursor/rules/voice-and-copy.mdc`, `.cursor/rules/frontend-ui.mdc`.
@@ -72,4 +72,4 @@ Details: `.cursor/rules/voice-and-copy.mdc`, `.cursor/rules/frontend-ui.mdc`.
 | `frontend-ui.mdc` | UI files |
 | `testing-conventions.mdc` | `*.test.ts` / `*.spec.ts` |
 | `solidity-natspec.mdc` | `*.sol` |
-| `nikopay-lightning.mdc` | Always (mission) |
+| `ln-network.mdc` | Always (mission) |

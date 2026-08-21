@@ -1,5 +1,5 @@
 ---
-description: Frontend UI: follow NikoPay theme, no AI layout tropes
+description: Frontend UI: follow existing theme, no AI layout tropes
 globs: "**/*.{tsx,jsx,css,scss,vue,svelte}"
 alwaysApply: false
 ---
@@ -8,9 +8,9 @@ alwaysApply: false
 
 ## Theme (non-negotiable)
 
-- **Follow the existing app theme.** Reuse colors, type, spacing, radii, and components from the NikoPay design system / CSS variables already in the product.
-- **Do not invent a theme** (new palette, new font stack, new "AI SaaS" look) when integrating Lightning screens.
-- If tokens live in the main NikoPay app, import or mirror those tokens. If only marketing exists, match [nikopay.rw](https://www.nikopay.rw/) visually before inventing anything.
+- **Follow the existing app theme.** Reuse colors, type, spacing, radii, and components from CSS variables already in the product.
+- **Do not invent a theme** (new palette, new font stack, new "AI SaaS" look) when adding screens.
+- If tokens already exist, import or mirror them. If there is no UI yet, keep it plain.
 - When unsure, ask or inspect existing UI source. Never "improve" branding in a drive-by.
 
 ## Anti-AI UI structures

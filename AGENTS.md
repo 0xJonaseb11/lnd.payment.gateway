@@ -1,6 +1,6 @@
 # AGENTS.md: LN payment network
 
-> **Mission:** Run a Lightning payment network that processes **stablecoin-denominated** payments with **~1 second LN finality**, and offramp to **RWF on MTN MoMo**. NikoPay is a product on this network, not the whole network.
+> **Mission:** Run a Lightning payment network that processes **stablecoin-denominated** payments with **~1 second LN finality**, and offramp to **RWF on MTN MoMo**. This repo is network tooling, not a wallet app.
 
 ---
 
@@ -11,7 +11,7 @@
 | **Network** | LND hold invoices, USDT micros as unit of account |
 | **Offramp** | MoMo Disbursements (RWF) |
 | **Also** | Internal ledger rail (credit USDT after LN accept) |
-| **NikoPay** | [nikopay.rw](https://www.nikopay.rw/) can consume `/v1/payments` |
+| **Clients** | Any app that can `POST /v1/payments` with an API key |
 | **Competitor pattern** | [Tando](https://tando.me/): Lightning → mobile money |
 
 ---
@@ -19,7 +19,7 @@
 ## Agent quickstart
 
 1. Read **this file**.
-2. Load **`ln-payment-network`** then **`nikopay-architecture`**.
+2. Load **`ln-payment-network`** then **`network-architecture`**.
 3. For MoMo offramp detail, load **`lightning-rwf-offramp`** and **`momo-disbursement`**.
 4. Place code under `services/*` and `packages/*`.
 5. Follow [`docs/ROADMAP.md`](docs/ROADMAP.md).
@@ -52,11 +52,12 @@ Enforce via [`.cursor/rules/`](.cursor/rules/). Summary:
 - Idempotent MoMo; conditional state transitions; efficient LN accept path.
 - Tests: deterministic, mocked ports; behavior over snapshots.
 - **Voice:** no em dashes, no AI filler, sentence case only.
-- **UI:** reuse NikoPay theme/tokens when building NikoPay screens; do not invent a look.
+- **UI:** reuse existing tokens if a UI exists; do not invent a look.
 
 | Rule | Applies |
 |------|---------|
 | [`coding-quality`](.cursor/rules/coding-quality.mdc) | Always |
+| [`ln-network`](.cursor/rules/ln-network.mdc) | Always (mission) |
 | [`voice-and-copy`](.cursor/rules/voice-and-copy.mdc) | Always |
 | [`typescript-conventions`](.cursor/rules/typescript-conventions.mdc) | `*.ts` / `*.tsx` |
 | [`service-layering`](.cursor/rules/service-layering.mdc) | `services/**` |
@@ -72,8 +73,8 @@ Enforce via [`.cursor/rules/`](.cursor/rules/). Summary:
 | Skill | When to use |
 |-------|-------------|
 | [`ln-payment-network`](.cursor/skills/ln-payment-network/SKILL.md) | Network scope, rails, run/test |
-| [`nikopay-mission`](.cursor/skills/nikopay-mission/SKILL.md) | NikoPay / RWF product questions |
-| [`nikopay-architecture`](.cursor/skills/nikopay-architecture/SKILL.md) | File placement, conventions |
+| [`network-mission`](.cursor/skills/network-mission/SKILL.md) | Product scope / RWF offramp questions |
+| [`network-architecture`](.cursor/skills/network-architecture/SKILL.md) | File placement, conventions |
 | [`lightning-fundamentals`](.cursor/skills/lightning-fundamentals/SKILL.md) | Channels, HTLCs, invoices |
 | [`lnd-operations`](.cursor/skills/lnd-operations/SKILL.md) | Install LND, macaroons, gRPC |
 | [`lightning-rwf-offramp`](.cursor/skills/lightning-rwf-offramp/SKILL.md) | MoMo offramp coupling |

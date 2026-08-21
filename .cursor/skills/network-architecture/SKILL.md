@@ -1,18 +1,18 @@
 ---
-name: nikopay-architecture
+name: network-architecture
 description: >-
-  NikoPay Lightning service blueprint: repo layout, service boundaries, stack
-  defaults, roadmap phases, and coding conventions. Use when scaffolding
-  services, placing files, choosing tech, or directing other agents on structure.
+  LN payment network blueprint: repo layout, service boundaries, stack defaults,
+  roadmap phases, and coding conventions. Use when scaffolding services, placing
+  files, choosing tech, or directing other agents on structure.
 ---
 
-# NikoPay architecture skill
+# Network architecture skill
 
 ## Start here every time
 
-1. [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md): system design  
-2. [docs/PROJECT_STRUCTURE.md](../../../docs/PROJECT_STRUCTURE.md): where code goes  
-3. [docs/ROADMAP.md](../../../docs/ROADMAP.md): phase gates  
+1. [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md): system design
+2. [docs/PROJECT_STRUCTURE.md](../../../docs/PROJECT_STRUCTURE.md): where code goes
+3. [docs/ROADMAP.md](../../../docs/ROADMAP.md): phase gates
 4. Domain skill for the task (`lightning-rwf-offramp`, `lnd-operations`, `momo-disbursement`, …)
 
 ## Repo layout (do not invent parallel trees)
@@ -63,4 +63,4 @@ shared + ports → network-api (done) → real LND adapter → MoMo sandbox HTTP
 
 ## When stuck
 
-Re-read `ln-payment-network` + `OFFRAMP_FLOW.md`. NikoPay product questions: `nikopay-mission`.
+Re-read `ln-payment-network` + `OFFRAMP_FLOW.md`. Product questions: `network-mission`.

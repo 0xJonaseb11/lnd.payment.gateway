@@ -1,5 +1,6 @@
 import { isAppError, Rail } from "@ln/shared";
 import { Hono } from "hono";
+import { parseApiKeys, requireApiKey } from "./auth.ts";
 import { CreatePaymentBody, toPaymentResponse } from "./dto.ts";
 import {
   asCreateRwf,
@@ -15,9 +16,11 @@ type AppBindings = {
 
 export function createHttpApp(
   network: NetworkService,
-  options: { allowDevPay: boolean },
+  options: { allowDevPay: boolean; apiKeys?: ReadonlySet<string> },
 ): Hono<AppBindings> {
   const app = new Hono<AppBindings>();
+  const apiKeys = options.apiKeys ?? parseApiKeys("");
+  const gated = requireApiKey(apiKeys);
 
   app.onError((err, c) => {
     if (isAppError(err)) {
@@ -44,7 +47,7 @@ export function createHttpApp(
     }),
   );
 
-  app.post("/v1/payments", async (c) => {
+  app.post("/v1/payments", gated, async (c) => {
     const parsed = CreatePaymentBody.safeParse(await c.req.json());
     if (!parsed.success) {
       return c.json(
@@ -69,18 +72,18 @@ export function createHttpApp(
     return c.json(toPaymentResponse(payment), 201);
   });
 
-  app.get("/v1/payments/:id", async (c) => {
+  app.get("/v1/payments/:id", gated, async (c) => {
     const payment = await network.get(c.req.param("id"));
     return c.json(toPaymentResponse(payment));
   });
 
-  app.get("/v1/accounts/:id", async (c) =>
+  app.get("/v1/accounts/:id", gated, async (c) =>
     c.json(await network.account(c.req.param("id"))),
   );
 
-  app.get("/metrics", (c) => c.json(network.metrics()));
+  app.get("/metrics", gated, (c) => c.json(network.metrics()));
 
-  app.post("/v1/webhooks/momo", async (c) => {
+  app.post("/v1/webhooks/momo", webhook, async (c) => {
     const body = (await c.req.json()) as {
       referenceId?: string;
       externalId?: string;
@@ -96,7 +99,7 @@ export function createHttpApp(
     return c.json(toPaymentResponse(payment));
   });
 
-  app.post("/v1/dev/pay/:id", async (c) => {
+  app.post("/v1/dev/pay/:id", gated, async (c) => {
     if (!options.allowDevPay) {
       return c.json(
         { error: { code: "DEV_DISABLED", message: "test pay is off" } },
