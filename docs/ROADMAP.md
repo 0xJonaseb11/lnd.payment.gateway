@@ -23,6 +23,7 @@
 
 - [x] File store (`STORE_PATH`, local fallback)
 - [x] Supabase store (`STORE_BACKEND=supabase`, `DATABASE_URL`)
+- [x] Live ledger smoke (`./scripts/smoke-ledger-supabase.sh`)
 - [x] Live BTC-USD feed (`FX_LIVE=true`)
 - [x] Reconciliation job
 - [x] `/metrics` counters

@@ -33,6 +33,12 @@ curl -s -X POST localhost:8787/v1/dev/pay/pay_...
 
 Two-node regtest: `./scripts/regtest-bootstrap.sh`
 
+Live ledger against Supabase (requires `STORE_BACKEND=supabase` and `DATABASE_URL`):
+
+```
+./scripts/smoke-ledger-supabase.sh
+```
+
 ## Layout
 
 ```
@@ -42,6 +48,7 @@ services/momo-gateway MoMo disbursement
 services/fx-rate    integer quotes
 services/network-api HTTP + orchestration
 supabase/           payments + ledger schema
+scripts/            regtest bootstrap + store smoke
 ```
 
 Supabase is the payment store. Set `STORE_BACKEND=supabase` and `DATABASE_URL` after applying `supabase/migrations`. Tests keep the memory store.

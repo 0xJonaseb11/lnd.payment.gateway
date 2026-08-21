@@ -59,4 +59,4 @@ Memory backend: `POST /v1/dev/pay/:id` simulates Lightning pay.
 
 ## Next
 
-Prove live ledger pay with `STORE_BACKEND=supabase`. Run `./scripts/regtest-bootstrap.sh` for real LND. MoMo sandbox E2E with live keys.
+Run `./scripts/smoke-ledger-supabase.sh` after setting `STORE_BACKEND=supabase` and `DATABASE_URL`. Run `./scripts/regtest-bootstrap.sh` for real LND. MoMo sandbox E2E with live keys.
