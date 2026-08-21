@@ -12,6 +12,7 @@
 - [x] `LightningPort` REST adapter (`createLndRest`)
 - [x] SubscribeInvoices → `onInvoiceAccepted`
 - [x] Simnet pay from a second node (`lnd-payer` + `PayerPort`)
+- [ ] Regtest pay smoke (`./scripts/smoke-regtest.sh`, needs Docker)
 
 ## Phase 2: MoMo sandbox
 
