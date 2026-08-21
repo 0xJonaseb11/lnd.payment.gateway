@@ -29,7 +29,7 @@
 
 ## Phase 4: Network clients
 
-- [ ] Authenticated access to `/v1/payments` for external clients
+- [x] Authenticated access to `/v1/payments` for external clients
 - [x] Airtel destination type behind the same MoMo port
 - [x] Status payload separates rail, provider, and amount_rwf
 

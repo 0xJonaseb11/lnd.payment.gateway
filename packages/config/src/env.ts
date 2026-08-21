@@ -26,6 +26,7 @@ const EnvSchema = z.object({
   MOMO_API_KEY: z.string().optional(),
   MOMO_TARGET_ENV: z.string().default("sandbox"),
   NETWORK_API_KEYS: z.string().default(""),
+  MOMO_WEBHOOK_SECRET: z.string().default(""),
   STORE_BACKEND: z.enum(["memory", "file", "supabase"]).default("memory"),
   STORE_PATH: z.string().default(""),
   DATABASE_URL: z.string().default(""),

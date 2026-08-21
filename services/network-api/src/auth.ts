@@ -44,3 +44,22 @@ export function requireApiKey(keys: ReadonlySet<string>): MiddlewareHandler {
     await next();
   };
 }
+
+export function requireSecret(secret: string, headerName: string): MiddlewareHandler {
+  return async (c, next) => {
+    if (!secret) {
+      await next();
+      return;
+    }
+    const presented = (c.req.header(headerName) ?? "").trim();
+    const left = Buffer.from(presented);
+    const right = Buffer.from(secret);
+    if (left.length !== right.length || !timingSafeEqual(left, right)) {
+      return c.json(
+        { error: { code: "UNAUTHORIZED", message: "invalid webhook secret" } },
+        401,
+      );
+    }
+    await next();
+  };
+}

@@ -17,7 +17,7 @@ npm test
 npm run dev
 ```
 
-Create a MoMo offramp:
+Create a MoMo offramp (add `-H 'Authorization: Bearer <key>'` when `NETWORK_API_KEYS` is set):
 
 ```
 curl -s localhost:8787/v1/payments \
