@@ -17,7 +17,7 @@ LND/
 │   └── fx-rate/              # integer quotes
 ├── infra/docker/
 ├── supabase/                 # Postgres schema (network.payments, ledger)
-└── scripts/                  # regtest bootstrap (two LND nodes)
+└── scripts/                  # regtest bootstrap + supabase ledger smoke
 ```
 
 Gateways are **libraries** composed by `network-api`. They are not separate HTTP processes in v1.
