@@ -59,4 +59,4 @@ Memory backend: `POST /v1/dev/pay/:id` simulates Lightning pay.
 
 ## Next
 
-Run `./scripts/smoke-ledger-supabase.sh` after setting `STORE_BACKEND=supabase` and `DATABASE_URL`. Run `./scripts/regtest-bootstrap.sh` for real LND. MoMo sandbox E2E with live keys.
+Run `./scripts/smoke-regtest.sh` when Docker is available (ticks Phase 1 regtest smoke). MoMo sandbox E2E needs live `MOMO_*` keys.
