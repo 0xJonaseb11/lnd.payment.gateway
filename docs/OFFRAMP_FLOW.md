@@ -29,6 +29,22 @@ sequenceDiagram
   API-->>W: COMPLETE (RWF delivered)
 ```
 
+## Auth
+
+When `NETWORK_API_KEYS` is set (comma-separated), these routes require a key:
+
+- `POST /v1/payments`
+- `GET /v1/payments/:id`
+- `GET /v1/accounts/:id`
+- `GET /metrics`
+- `POST /v1/dev/pay/:id`
+
+Send `Authorization: Bearer <key>` or `X-Api-Key: <key>`. Empty `NETWORK_API_KEYS` leaves those routes open (local tests).
+
+When `MOMO_WEBHOOK_SECRET` is set, `POST /v1/webhooks/momo` requires `X-Callback-Secret: <secret>`. Empty secret leaves the webhook open.
+
+Public always: `GET /health`, `GET /.well-known/ln-network.json`.
+
 ## Request / response
 
 ```json

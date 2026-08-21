@@ -1,6 +1,6 @@
 import { isAppError, Rail } from "@ln/shared";
 import { Hono } from "hono";
-import { parseApiKeys, requireApiKey } from "./auth.ts";
+import { parseApiKeys, requireApiKey, requireSecret } from "./auth.ts";
 import { CreatePaymentBody, toPaymentResponse } from "./dto.ts";
 import {
   asCreateRwf,
@@ -16,11 +16,16 @@ type AppBindings = {
 
 export function createHttpApp(
   network: NetworkService,
-  options: { allowDevPay: boolean; apiKeys?: ReadonlySet<string> },
+  options: {
+    allowDevPay: boolean;
+    apiKeys?: ReadonlySet<string>;
+    webhookSecret?: string;
+  },
 ): Hono<AppBindings> {
   const app = new Hono<AppBindings>();
   const apiKeys = options.apiKeys ?? parseApiKeys("");
   const gated = requireApiKey(apiKeys);
+  const webhook = requireSecret(options.webhookSecret ?? "", "x-callback-secret");
 
   app.onError((err, c) => {
     if (isAppError(err)) {

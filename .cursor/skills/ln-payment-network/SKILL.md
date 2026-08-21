@@ -53,6 +53,10 @@ npm run dev
 
 Memory backend: `POST /v1/dev/pay/:id` simulates Lightning pay.
 
+## Auth
+
+`NETWORK_API_KEYS` gates `/v1/payments`, status, accounts, metrics, and `/v1/dev/pay`. `MOMO_WEBHOOK_SECRET` gates `POST /v1/webhooks/momo` via `X-Callback-Secret`. Empty values stay open for tests. Details: `docs/OFFRAMP_FLOW.md`.
+
 ## Next
 
-Apply `supabase/migrations` and set `STORE_BACKEND=supabase` plus `DATABASE_URL`. Keep orchestration in `network-api`. Run `./scripts/regtest-bootstrap.sh` when you want real LND pay.
+Prove live ledger pay with `STORE_BACKEND=supabase`. Run `./scripts/regtest-bootstrap.sh` for real LND. MoMo sandbox E2E with live keys.
