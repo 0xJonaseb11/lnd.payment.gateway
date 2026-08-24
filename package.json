@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "dev": "npm run dev -w @ln/network-api",
+    "start": "npm run start -w @ln/network-api",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

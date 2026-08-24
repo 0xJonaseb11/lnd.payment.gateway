@@ -39,3 +39,12 @@
 
 - [ ] USDT (or other) on LN via `tapd`
 - [ ] Keep MoMo offramp; swap FX at the edge if needed
+
+## Open source release
+
+- [x] MIT license
+- [x] CI (test + typecheck)
+- [x] Docker image + `npm run start`
+- [x] Deploy guide (`docs/DEPLOY.md`)
+- [x] MoMo sandbox smoke script (`./scripts/smoke-momo-sandbox.sh`)
+- [ ] MoMo sandbox smoke verified with live keys
