@@ -1,18 +1,23 @@
 # LN payment network
 
-Lightning Network service that processes **stablecoin-denominated** payments (USDT micros) with hold invoices, and offramps to **RWF via MTN MoMo**.
+Open source payment gateway for **Lightning hold invoices** with **MoMo RWF offramp** and an internal **ledger** rail. USDT micros are the unit of account. Clients call `POST /v1/payments`.
 
-## Start here
+Built for integrators: wallets, remittance apps, and any service that needs Lightning in and local currency out.
 
-| Audience | Start |
-|----------|--------|
-| Humans | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| Agents | [`AGENTS.md`](AGENTS.md) |
+## What it does
 
-## Run
+| Rail | Flow |
+|------|------|
+| `momo_rwf` | BOLT11 → LN accept → MTN MoMo disbursement → settle or refund |
+| `ledger` | BOLT11 → LN accept → credit USDT micros on an account |
+
+Hold invoices protect payers: if MoMo fails, the HTLC is canceled.
+
+## Quick start
 
 ```
 cp .env.example .env
+npm ci
 npm test
 npm run dev
 ```
@@ -25,25 +30,42 @@ curl -s localhost:8787/v1/payments \
   -d '{"rail":"momo_rwf","amount_rwf":1350,"msisdn":"250788123456"}'
 ```
 
-With a payer (memory, or `lnd-payer` after bootstrap):
+Simulate Lightning pay (memory backend only):
 
 ```
 curl -s -X POST localhost:8787/v1/dev/pay/pay_...
 ```
 
-Two-node regtest: `./scripts/regtest-bootstrap.sh`
+Discovery: `GET /.well-known/ln-network.json`
 
-Regtest hold-invoice pay (needs Docker):
+## Docs
+
+| Doc | Purpose |
+|-----|---------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System design |
+| [`docs/OFFRAMP_FLOW.md`](docs/OFFRAMP_FLOW.md) | API, auth, statuses |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Production wiring |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phase gates |
+| [`AGENTS.md`](AGENTS.md) | Agent blueprint |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | PR flow |
+
+## Smoke tests
+
+| Script | Needs |
+|--------|-------|
+| `./scripts/smoke-ledger-supabase.sh` | Supabase `DATABASE_URL` |
+| `./scripts/smoke-regtest.sh` | Docker + two LND nodes |
+| `./scripts/smoke-momo-sandbox.sh` | Live MoMo sandbox keys |
+
+## Production
 
 ```
-./scripts/smoke-regtest.sh
+npm run start
 ```
 
-Live ledger against Supabase (requires `STORE_BACKEND=supabase` and `DATABASE_URL`):
+Or Docker: see [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
-```
-./scripts/smoke-ledger-supabase.sh
-```
+Set `STORE_BACKEND=supabase`, `LN_BACKEND=lnd_rest`, `MOMO_BACKEND=http`, and lock down `NETWORK_API_KEYS` plus `MOMO_WEBHOOK_SECRET`.
 
 ## Layout
 
@@ -54,7 +76,9 @@ services/momo-gateway MoMo disbursement
 services/fx-rate    integer quotes
 services/network-api HTTP + orchestration
 supabase/           payments + ledger schema
-scripts/            regtest bootstrap + smokes
+scripts/            bootstrap + smokes
 ```
 
-Supabase is the payment store. Set `STORE_BACKEND=supabase` and `DATABASE_URL` after applying `supabase/migrations`. Tests keep the memory store.
+## License
+
+MIT. See [`LICENSE`](LICENSE).

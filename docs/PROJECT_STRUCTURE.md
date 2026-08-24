@@ -3,8 +3,11 @@
 ```
 LND/
 ├── AGENTS.md
+├── LICENSE
+├── Dockerfile
 ├── README.md
 ├── docs/
+├── .github/workflows/
 ├── .cursor/skills/
 ├── .cursor/rules/
 ├── packages/

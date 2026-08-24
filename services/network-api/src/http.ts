@@ -45,10 +45,12 @@ export function createHttpApp(
   app.get("/.well-known/ln-network.json", (c) =>
     c.json({
       name: "LN payment network",
+      version: "0.1.0",
       rails: ["momo_rwf", "ledger"],
       unit: "USDT",
       offramp: "mtn_momo",
       hold_invoices: true,
+      docs: "https://github.com/0xJonaseb11/lnd.payment.network/blob/main/docs/OFFRAMP_FLOW.md",
     }),
   );
 

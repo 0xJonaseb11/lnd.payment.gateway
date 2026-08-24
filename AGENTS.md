@@ -35,6 +35,7 @@
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Network design, rails, state machine |
 | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) | Layout and stack |
 | [`docs/OFFRAMP_FLOW.md`](docs/OFFRAMP_FLOW.md) | MoMo rail sequence and API |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Production wiring |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phase gates |
 | [`docs/RESOURCES.md`](docs/RESOURCES.md) | External docs |
 | [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md) | Quality bar |
