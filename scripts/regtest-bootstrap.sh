@@ -6,6 +6,11 @@ COMPOSE=(docker compose -f "$ROOT/infra/docker/compose.yml")
 BTC=(bitcoin-cli -regtest -rpcuser=ln -rpcpassword=ln)
 LN=(lncli --network=regtest)
 
+if ! command -v docker >/dev/null 2>&1; then
+  echo "docker is required for regtest bootstrap" >&2
+  exit 1
+fi
+
 json_field() {
   python3 -c "import json,sys; print(json.load(sys.stdin)$1)"
 }
@@ -19,6 +24,19 @@ wait_ln() {
     sleep 2
   done
   echo "timeout waiting for $svc" >&2
+  exit 1
+}
+
+wait_channel() {
+  for _ in $(seq 1 60); do
+    local active
+    active="$("${COMPOSE[@]}" exec -T lnd "${LN[@]}" listchannels | python3 -c 'import json,sys; ch=json.load(sys.stdin).get("channels") or []; print(sum(1 for c in ch if c.get("active")))')"
+    if [[ "$active" != "0" ]]; then
+      return 0
+    fi
+    sleep 2
+  done
+  echo "timeout waiting for active channel" >&2
   exit 1
 }
 
@@ -39,8 +57,13 @@ done
 
 PUB="$("${COMPOSE[@]}" exec -T lnd "${LN[@]}" getinfo | json_field '["identity_pubkey"]')"
 "${COMPOSE[@]}" exec -T lnd-payer "${LN[@]}" connect "$PUB@lnd:9735" >/dev/null || true
-"${COMPOSE[@]}" exec -T lnd-payer "${LN[@]}" openchannel --node_key="$PUB" --local_amt=1000000 >/dev/null
-"${COMPOSE[@]}" exec -T bitcoind "${BTC[@]}" generatetoaddress 6 "$ADDR" >/dev/null
+
+CHANNELS="$("${COMPOSE[@]}" exec -T lnd "${LN[@]}" listchannels | python3 -c 'import json,sys; print(len(json.load(sys.stdin).get("channels") or []))')"
+if [[ "$CHANNELS" = "0" ]]; then
+  "${COMPOSE[@]}" exec -T lnd-payer "${LN[@]}" openchannel --node_key="$PUB" --local_amt=1000000 >/dev/null
+  "${COMPOSE[@]}" exec -T bitcoind "${BTC[@]}" generatetoaddress 6 "$ADDR" >/dev/null
+fi
+wait_channel
 
 echo "LN_BACKEND=lnd_rest"
 echo "LND_REST_HOST=https://127.0.0.1:8080"
