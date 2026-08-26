@@ -1,6 +1,6 @@
 # Coding standards
 
-Canonical quality bar for the LN payment network. Rules in `.cursor/rules/` enforce this during edits; this doc is the human/agent reference.
+Canonical quality bar for the LN payment network.
 
 ## Principles
 
@@ -28,8 +28,6 @@ Canonical quality bar for the LN payment network. Rules in `.cursor/rules/` enfo
 | Copy | Plain, specific. No AI filler words or hype stacks. |
 | Theme | Reuse existing tokens if a UI exists. Do not invent a palette or "AI SaaS" look. |
 | Layout | No purple glows, pill-chip hero clutter, or decorative card grids. |
-
-Details: `.cursor/rules/voice-and-copy.mdc`, `.cursor/rules/frontend-ui.mdc`.
 
 ## Naming
 
@@ -60,16 +58,3 @@ Details: `.cursor/rules/voice-and-copy.mdc`, `.cursor/rules/frontend-ui.mdc`.
 - [ ] Logging structured and sampled on hot paths (no full BOLT11/PII at info level)
 - [ ] Dependencies justified; no unused packages
 
-## Rules index
-
-| Rule file | Scope |
-|-----------|--------|
-| `coding-quality.mdc` | Always |
-| `voice-and-copy.mdc` | Always |
-| `typescript-conventions.mdc` | `*.ts` / `*.tsx` |
-| `service-layering.mdc` | `services/**` |
-| `api-conventions.mdc` | `services/network-api/**` |
-| `frontend-ui.mdc` | UI files |
-| `testing-conventions.mdc` | `*.test.ts` / `*.spec.ts` |
-| `solidity-natspec.mdc` | `*.sol` |
-| `ln-network.mdc` | Always (mission) |

@@ -2,14 +2,12 @@
 
 ```
 LND/
-├── AGENTS.md
 ├── LICENSE
 ├── Dockerfile
 ├── README.md
+├── CONTRIBUTING.md
 ├── docs/
 ├── .github/workflows/
-├── .cursor/skills/
-├── .cursor/rules/
 ├── packages/
 │   ├── shared/               # money, status, ids, errors, logger
 │   └── config/               # env schema
@@ -20,7 +18,7 @@ LND/
 │   └── fx-rate/              # integer quotes
 ├── infra/docker/
 ├── supabase/                 # Postgres schema (network.payments, ledger)
-└── scripts/                  # regtest bootstrap + ledger/regtest smokes
+└── scripts/                  # regtest bootstrap + smokes
 ```
 
 Gateways are **libraries** composed by `network-api`. They are not separate HTTP processes in v1.
