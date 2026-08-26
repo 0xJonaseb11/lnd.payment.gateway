@@ -1,11 +1,4 @@
-# Never publish
 .cursor/
-AGENTS.md
-docs/
-CONTRIBUTING.md
-packages/README.md
-services/README.md
-infra/**/README.md
 
 #env
 .env
