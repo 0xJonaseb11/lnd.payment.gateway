@@ -46,8 +46,8 @@ Discovery: `GET /.well-known/ln-network.json`
 | [`docs/OFFRAMP_FLOW.md`](docs/OFFRAMP_FLOW.md) | API, auth, statuses |
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | Production wiring |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phase gates |
-| [`AGENTS.md`](AGENTS.md) | Agent blueprint |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | PR flow |
+| [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md) | Quality bar |
+
 
 ## Smoke tests
 

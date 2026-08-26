@@ -25,4 +25,5 @@ Open PRs against **`dev`**. `main` is the release line after review.
 
 ## Docs
 
-Update `docs/` when behavior or env vars change. See `AGENTS.md` for architecture rules.
+Update `docs/` when behavior or env vars change. Start with `docs/ARCHITECTURE.md` and `docs/CODING_STANDARDS.md`.
+

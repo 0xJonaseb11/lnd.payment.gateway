@@ -1,9 +1,6 @@
-# Local Cursor state (keep skills + rules versioned)
-.cursor/*
-!.cursor/skills/
-!.cursor/skills/**
-!.cursor/rules/
-!.cursor/rules/**
+# Local agent / Cursor tooling (never publish)
+.cursor/
+AGENTS.md
 
 #env
 .env
