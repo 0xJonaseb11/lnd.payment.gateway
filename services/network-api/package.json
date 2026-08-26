@@ -6,8 +6,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "tsx src/main.ts",
-    "start": "tsx src/main.ts"
+    "dev": "node init && tsx src/main.ts",
+    "start": "node init && tsx src/main.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",

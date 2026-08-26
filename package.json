@@ -10,14 +10,15 @@
     "services/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w @ln/network-api",
-    "start": "npm run start -w @ln/network-api",
+    "dev": "node init && npm run dev -w @ln/network-api",
+    "start": "node init && npm run start -w @ln/network-api",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
+    "node-fetch": "^3.3.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^3.0.9"
