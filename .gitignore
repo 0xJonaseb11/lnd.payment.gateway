@@ -1,11 +1,4 @@
-# Local / private (never publish)
 .cursor/
-AGENTS.md
-docs/
-CONTRIBUTING.md
-packages/README.md
-services/README.md
-infra/docker/README.md
 
 #env
 .env
@@ -25,21 +18,26 @@ invoice.macaroon
 # deps / build
 node_modules/
 dist/
+**/dist/
 build/
 coverage/
 .next/
 .turbo/
 *.tsbuildinfo
+**/*.tsbuildinfo
 
 # OS / IDE
 .DS_Store
 .idea/
 *.swp
 *.swo
+*.code-workspace
 
-# logs
+# logs / temp
 *.log
 logs/
+tmp/
+.temp/
 
 # bitcoin / lnd local data (never commit)
 infra/docker/data/

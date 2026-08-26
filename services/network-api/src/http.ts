@@ -50,7 +50,6 @@ export function createHttpApp(
       unit: "USDT",
       offramp: "mtn_momo",
       hold_invoices: true,
-      docs: "https://github.com/0xJonaseb11/lnd.payment.network/blob/main/docs/OFFRAMP_FLOW.md",
     }),
   );
 
