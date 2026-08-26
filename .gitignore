@@ -1,8 +1,6 @@
 .cursor/
 
 #env
-.env
-.env.*
 !.env.example
 
 # secrets / node data
@@ -44,3 +42,4 @@ infra/docker/data/
 lnd-data/
 bitcoin-data/
 data/
+config.bat
