@@ -62,6 +62,10 @@ describe("http", () => {
     expect(res.status).toBe(401);
   });
 
+  it("parses comma-separated api keys and drops blanks", () => {
+    expect([...parseApiKeys(" a, ,b ")]).toEqual(["a", "b"]);
+  });
+
   it("accepts a bearer api key", async () => {
     const api = app(parseApiKeys("net_test_key"));
     const res = await api.request("/v1/payments", {
