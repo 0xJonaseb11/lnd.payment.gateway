@@ -41,6 +41,7 @@ Discovery: `GET /.well-known/ln-network.json`
 | `GET /health` | Liveness |
 | `POST /v1/dev/pay/:id` | Test pay (memory / regtest payer only) |
 
+
 Statuses: `INVOICE_ISSUED` · `LN_ACCEPTED` · `DISBURSING` · `COMPLETE` · `REFUNDED` · `MANUAL_REVIEW` · `EXPIRED`
 
 ## Auth
