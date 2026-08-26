@@ -47,7 +47,7 @@ Discovery: `GET /.well-known/ln-network.json`
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | Production wiring |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phase gates |
 | [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md) | Quality bar |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | PR flow |
+
 
 ## Smoke tests
 
