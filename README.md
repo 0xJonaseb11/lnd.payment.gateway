@@ -1,10 +1,8 @@
 # LN payment network
 
-Open source payment gateway for **Lightning hold invoices** with **MoMo RWF offramp** and an internal **ledger** rail. USDT micros are the unit of account. Clients call `POST /v1/payments`.
+Open source payment gateway: **Lightning hold invoices**, **MoMo RWF offramp**, and an internal **ledger** rail. Unit of account: USDT micros. Clients call `POST /v1/payments`.
 
-Built for integrators: wallets, remittance apps, and any service that needs Lightning in and local currency out.
-
-## What it does
+## Rails
 
 | Rail | Flow |
 |------|------|
@@ -22,61 +20,61 @@ npm test
 npm run dev
 ```
 
-Create a MoMo offramp (add `-H 'Authorization: Bearer <key>'` when `NETWORK_API_KEYS` is set):
-
 ```
 curl -s localhost:8787/v1/payments \
   -H 'content-type: application/json' \
   -d '{"rail":"momo_rwf","amount_rwf":1350,"msisdn":"250788123456"}'
 ```
 
-Simulate Lightning pay (memory backend only):
-
-```
-curl -s -X POST localhost:8787/v1/dev/pay/pay_...
-```
+Memory pay: `curl -s -X POST localhost:8787/v1/dev/pay/pay_...`
 
 Discovery: `GET /.well-known/ln-network.json`
 
-## Docs
+## API
 
-| Doc | Purpose |
-|-----|---------|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System design |
-| [`docs/OFFRAMP_FLOW.md`](docs/OFFRAMP_FLOW.md) | API, auth, statuses |
-| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Production wiring |
-| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phase gates |
-| [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md) | Quality bar |
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/payments` | Create hold invoice (`momo_rwf` or `ledger`) |
+| `GET /v1/payments/:id` | Status |
+| `GET /v1/accounts/:id` | Ledger balance |
+| `POST /v1/webhooks/momo` | MoMo callback |
+| `GET /health` | Liveness |
+| `POST /v1/dev/pay/:id` | Test pay (memory / regtest payer only) |
 
 
-## Smoke tests
+Statuses: `INVOICE_ISSUED` · `LN_ACCEPTED` · `DISBURSING` · `COMPLETE` · `REFUNDED` · `MANUAL_REVIEW` · `EXPIRED`
 
-| Script | Needs |
-|--------|-------|
-| `./scripts/smoke-ledger-supabase.sh` | Supabase `DATABASE_URL` |
-| `./scripts/smoke-regtest.sh` | Docker + two LND nodes |
-| `./scripts/smoke-momo-sandbox.sh` | Live MoMo sandbox keys |
+## Auth
+
+When `NETWORK_API_KEYS` is set, gated routes need `Authorization: Bearer <key>` or `X-Api-Key`. Empty keys leave routes open for local tests.
+
+When `MOMO_WEBHOOK_SECRET` is set, webhooks need `X-Callback-Secret`.
+
+Public always: `/health`, `/.well-known/ln-network.json`.
 
 ## Production
 
 ```
 npm run start
+# or
+docker build -t ln-network-api .
+docker run --env-file .env -p 8787:8787 ln-network-api
 ```
 
-Or Docker: see [`docs/DEPLOY.md`](docs/DEPLOY.md).
+Typical env: `STORE_BACKEND=supabase`, `DATABASE_URL=...`, `LN_BACKEND=lnd_rest`, `MOMO_BACKEND=http`, plus `NETWORK_API_KEYS` and `MOMO_WEBHOOK_SECRET`. See `.env.example`.
 
-Set `STORE_BACKEND=supabase`, `LN_BACKEND=lnd_rest`, `MOMO_BACKEND=http`, and lock down `NETWORK_API_KEYS` plus `MOMO_WEBHOOK_SECRET`.
+Smokes (optional): `./scripts/smoke-ledger-supabase.sh`, `./scripts/smoke-regtest.sh`, `./scripts/smoke-momo-sandbox.sh`.
 
 ## Layout
 
 ```
-packages/shared     money, status, errors
-services/ln-gateway LightningPort
+packages/shared      money, status, errors
+services/ln-gateway  LightningPort
 services/momo-gateway MoMo disbursement
-services/fx-rate    integer quotes
+services/fx-rate     integer quotes
 services/network-api HTTP + orchestration
-supabase/           payments + ledger schema
-scripts/            bootstrap + smokes
+supabase/            payments + ledger schema
+scripts/             bootstrap + smokes
 ```
 
 ## License

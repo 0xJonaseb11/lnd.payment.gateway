@@ -1,6 +1,11 @@
-# Local agent / Cursor tooling (never publish)
+# Local / private (never publish)
 .cursor/
 AGENTS.md
+docs/
+CONTRIBUTING.md
+packages/README.md
+services/README.md
+infra/docker/README.md
 
 #env
 .env
